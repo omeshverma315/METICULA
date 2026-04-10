@@ -3,400 +3,426 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meticula | Professional Screenplay Studio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <title>Meticula - Screenplay Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <style>
+        /* =========================================
+           GLOBAL VARIABLES & UI THEME
+           ========================================= */
         :root {
-            /* Core Palette */
-            --brand-red: #e50914;
-            --brand-red-hover: #b20710;
-            --ui-black: #08080a;
-            --ui-card: #141417;
-            --ui-border: rgba(255, 255, 255, 0.08);
-            --text-main: #ffffff;
-            --text-dim: #a3a3a3;
-            --canvas-bg: #323236;
-            
-            /* Typography */
-            --font-ui: 'Inter', -apple-system, sans-serif;
-            --font-script: 'Courier Prime', monospace;
-            
-            /* Transitions */
-            --ease: cubic-bezier(0.4, 0, 0.2, 1);
+            --bg-deep: #121212;
+            --black-dark: #1a1a1a;      
+            --black-light: #242424;     
+            --grey-editor: #333333;       
+            --grey-text: #a0a0a0;       
+            --red-accent: #e50914; 
+            --green-save: #28a745;     
+            --white: #ffffff;
+            --border-color: #333333;
+            --font-ui: 'Segoe UI', system-ui, sans-serif;
+            --font-script: 'Courier Prime', Courier, monospace;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-ui); background-color: var(--bg-deep); color: var(--white); height: 100vh; overflow: hidden; }
 
-        body {
-            font-family: var(--font-ui);
-            background-color: var(--ui-black);
-            color: var(--text-main);
-            height: 100vh;
-            overflow: hidden;
-        }
+        /* SPA View Controller */
+        .app-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; }
+        .app-view.active { display: flex; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- View Controller --- */
-        .app-stage {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
+        /* Buttons & Avatars */
+        .btn-primary { padding: 8px 16px; background-color: var(--red-accent); color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-primary:hover { opacity: 0.8; transform: scale(0.98); }
+        .btn-save { background-color: var(--green-save); }
+        .avatar { width: 32px; height: 32px; border-radius: 50%; background-color: var(--red-accent); display: flex; justify-content: center; align-items: center; cursor: pointer; }
 
-        .view {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
-            transform: scale(1.02);
-            display: flex;
+        /* Export Controls */
+        .export-group { display: flex; align-items: center; background: #111; border: 1px solid var(--green-save); border-radius: 4px; overflow: hidden;}
+        .export-select { background: #111; color: white; border: none; padding: 8px 12px; outline: none; cursor: pointer; font-family: var(--font-ui); font-weight: 500;}
+        .export-btn { background: var(--green-save); color: white; border: none; padding: 8px 16px; font-weight: bold; cursor: pointer; transition: 0.2s;}
+        .export-btn:hover { background: #218838; }
+
+        /* =========================================
+           DASHBOARD VIEW
+           ========================================= */
+        .topbar { height: 60px; background: var(--black-dark); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+        .main-layout { display: flex; flex: 1; }
+        .sidebar { width: 250px; background: var(--black-dark); border-right: 1px solid var(--border-color); padding: 20px; }
+        .content { flex: 1; padding: 40px; background: var(--bg-deep); }
+        .project-card { background: var(--black-light); padding: 20px; border-radius: 8px; cursor: pointer; max-width: 600px; display: flex; align-items: center; gap: 15px; border: 1px solid transparent; transition: 0.2s; }
+        .project-card:hover { border-color: var(--red-accent); transform: translateY(-2px); }
+
+        /* =========================================
+           SCRIPT EDITOR VIEW 
+           ========================================= */
+        .editor-layout { display: flex; flex-direction: column; height: 100vh; }
+        
+        .editor-header { height: 60px; background: var(--black-dark); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0;}
+        .back-btn { background: none; border: none; color: var(--grey-text); cursor: pointer; font-size: 1rem; }
+        .back-btn:hover { color: var(--white); }
+        .header-actions { display: flex; gap: 15px; align-items: center; }
+
+        /* Formatting Toolbar */
+        .editor-toolbar { height: 50px; background: var(--black-light); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 20px; gap: 15px; flex-shrink: 0;}
+        .format-select { background: #111; color: white; border: 1px solid var(--grey-text); padding: 8px 12px; border-radius: 4px; outline: none; cursor: pointer; font-family: var(--font-ui); }
+        
+        /* Canvas (Holds all pages) */
+        .editor-canvas { 
+            flex: 1; 
+            background-color: var(--grey-editor); 
+            overflow-y: auto; 
+            display: flex; 
             flex-direction: column;
+            align-items: center; 
+            padding: 40px 20px; 
+            gap: 40px; 
         }
-
-        .view.active {
-            opacity: 1;
-            pointer-events: all;
-            transform: scale(1);
-            z-index: 10;
-        }
-
-        /* --- Login Module --- */
-        #view-auth {
-            justify-content: center;
-            align-items: center;
-            background: radial-gradient(circle at 50% 50%, #1a0505 0%, #08080a 100%);
-        }
-
-        .auth-card {
-            background: var(--ui-card);
-            padding: 3rem;
-            border-radius: 20px;
-            width: 100%;
-            max-width: 400px;
-            border: 1px solid var(--ui-border);
-            text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        .logo-text {
-            font-size: 2.5rem;
-            font-weight: 900;
-            letter-spacing: -2px;
-            margin-bottom: 2rem;
-            background: linear-gradient(to bottom, #fff 0%, #888 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 12px 16px;
-            background: #000;
-            border: 1px solid var(--ui-border);
-            border-radius: 8px;
-            color: white;
-            margin-bottom: 1rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .input-field:focus { border-color: var(--brand-red); }
-
-        .btn {
-            cursor: pointer;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 14px;
-            background: var(--brand-red);
-            color: white;
-        }
-
-        .btn-primary:hover { background: var(--brand-red-hover); transform: translateY(-1px); }
-
-        /* --- Dashboard Module --- */
-        .navbar {
-            height: 64px;
-            border-bottom: 1px solid var(--ui-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 2rem;
-            background: rgba(8, 8, 10, 0.8);
-            backdrop-filter: blur(10px);
-        }
-
-        .dashboard-body {
-            display: flex;
-            flex: 1;
-        }
-
-        .sidebar {
-            width: 260px;
-            border-right: 1px solid var(--ui-border);
-            padding: 2rem 1rem;
-        }
-
-        .nav-link {
-            padding: 12px 16px;
-            border-radius: 8px;
-            color: var(--text-dim);
-            cursor: pointer;
-            margin-bottom: 4px;
-        }
-
-        .nav-link.active {
-            background: rgba(255,255,255,0.05);
-            color: white;
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 3rem;
-            overflow-y: auto;
-        }
-
-        .project-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .project-tile {
-            background: var(--ui-card);
-            border: 1px solid var(--ui-border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .project-tile:hover {
-            border-color: var(--brand-red);
-            background: #1c1c21;
-        }
-
-        /* --- Editor Module --- */
-        .editor-container {
-            display: flex;
-            height: 100vh;
-        }
-
-        .editor-main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: var(--canvas-bg);
-        }
-
-        .editor-toolbar {
-            height: 48px;
-            background: var(--ui-black);
-            border-bottom: 1px solid var(--ui-border);
-            display: flex;
-            align-items: center;
-            padding: 0 1rem;
-            gap: 1rem;
-        }
-
-        .script-canvas {
-            flex: 1;
-            overflow-y: auto;
-            padding: 3rem 1rem;
-            display: flex;
-            justify-content: center;
-        }
-
-        .page {
-            width: 8.5in;
-            min-height: 11in;
-            background: white;
-            color: black;
-            padding: 1in 1in 1in 1.5in;
+        
+        /* Individual Page Styles */
+        .script-page {
+            background-color: var(--white); color: #000;
+            width: 8.5in; 
+            height: 11in; /* STRICT US Letter Height */
+            padding: 1in 1in 1in 1.5in; /* Standard Hollywood Margins */
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
             font-family: var(--font-script);
             font-size: 12pt;
             line-height: 1.2;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
             outline: none;
-            white-space: pre-wrap;
+            overflow: hidden; 
+            position: relative;
+            flex-shrink: 0;
         }
 
-        /* --- Google Modal --- */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.85);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
+        /* Page Numbering */
+        .script-page::before {
+            content: attr(data-page) ".";
+            position: absolute;
+            top: 0.5in;
+            right: 1in;
+            font-family: var(--font-script);
+            font-size: 12pt;
+            color: #666;
         }
 
-        .google-card {
-            background: white;
-            color: #202124;
-            width: 400px;
-            border-radius: 8px;
-            padding: 2rem;
-        }
+        /* =========================================
+           HOLLYWOOD SCREENPLAY CSS RULES
+           ========================================= */
+        .script-page p { margin: 0 0 1em 0; min-height: 1em; white-space: pre-wrap; outline: none; }
+        .script-page p:empty::before { content: "\FEFF"; }
 
-        .user-pill {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            margin-top: 1rem;
-            cursor: pointer;
-        }
+        .script-page p.scene { text-transform: uppercase; font-weight: bold; margin-top: 1.5em; }
+        .script-page p.action { text-transform: none; }
+        .script-page p.character { text-transform: uppercase; margin-left: 2.2in; margin-bottom: 0; }
+        .script-page p.dialogue { margin-left: 1in; margin-right: 1.5in; margin-top: 0; }
+        .script-page p.parenthetical { margin-left: 1.5in; margin-top: 0; margin-bottom: 0; }
+        .script-page p.transition { text-align: right; text-transform: uppercase; margin-top: 1em; }
 
-        .avatar-circle {
-            width: 32px;
-            height: 32px;
-            background: var(--brand-red);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 12px;
-            font-weight: bold;
+        .status-bar { height: 35px; background: var(--black-dark); border-top: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; color: var(--grey-text); font-size: 0.85rem; flex-shrink: 0;}
+
+        /* Print Specific Styles for PDF Generation */
+        @media print {
+            .script-page { box-shadow: none; margin: 0; border: none; }
         }
     </style>
 </head>
 <body>
 
-    <div class="app-stage">
-        
-        <section id="view-auth" class="view active">
-            <div class="auth-card">
-                <h1 class="logo-text">METICULA</h1>
-                <form id="form-login">
-                    <input type="email" class="input-field" placeholder="Email" required>
-                    <input type="password" class="input-field" placeholder="Password" required>
-                    <button type="submit" class="btn btn-primary">SIGN IN</button>
-                </form>
-                <div style="margin: 1.5rem 0; color: var(--text-dim); font-size: 0.8rem;">OR</div>
-                <button class="btn" style="background:transparent; border:1px solid var(--ui-border); color:white; width:100%; padding:10px;" id="btn-google">
-                    Continue with Google
-                </button>
-            </div>
-        </section>
-
-        <section id="view-dash" class="view">
-            <nav class="navbar">
-                <div style="font-weight: 800; letter-spacing: 1px;">METICULA STUDIO</div>
-                <div class="avatar-circle" onclick="navigateTo('view-auth')" style="cursor:pointer">O</div>
-            </nav>
-            <div class="dashboard-body">
-                <aside class="sidebar">
-                    <div class="nav-link active">Projects</div>
-                    <div class="nav-link">Collaborations</div>
-                    <div class="nav-link">Library</div>
-                </aside>
-                <main class="main-content">
-                    <h2 style="font-weight: 300;">Your Scripts</h2>
-                    <div class="project-grid">
-                        <div class="project-tile" onclick="navigateTo('view-editor')">
-                            <div style="color: var(--brand-red); font-size: 0.7rem; font-weight: bold; margin-bottom: 0.5rem;">DRAFT V1</div>
-                            <h3 style="margin-bottom: 0.5rem;">Postmartom</h3>
-                            <p style="color: var(--text-dim); font-size: 0.85rem;">Last modified: 2 hours ago</p>
-                        </div>
+    <div id="dashboard-view" class="app-view active">
+        <header class="topbar">
+            <div style="font-weight: 900; letter-spacing: 1px;">METICULA</div>
+            <div class="avatar">O</div>
+        </header>
+        <div class="main-layout">
+            <aside class="sidebar">
+                <h3 style="margin-bottom: 20px;">My Studio</h3>
+                <p style="color: var(--red-accent); font-weight: bold;">Projects</p>
+            </aside>
+            <main class="content">
+                <h2 style="margin-bottom: 30px; font-weight: 400;">Your Scripts</h2>
+                <div class="project-card" onclick="openEditor()">
+                    <div style="width: 40px; height: 40px; background: #6a1b9a; border-radius: 4px;"></div>
+                    <div>
+                        <h3 style="margin-bottom: 5px;">Postmartom</h3>
+                        <p style="font-size: 0.8rem; color: var(--grey-text);">Click to open and edit script</p>
                     </div>
-                </main>
-            </div>
-        </section>
-
-        <section id="view-editor" class="view">
-            <div class="editor-container">
-                <aside class="sidebar" style="background: var(--ui-black);">
-                    <div style="padding-bottom: 2rem; color: var(--brand-red); cursor: pointer;" onclick="navigateTo('view-dash')">← Back to Dashboard</div>
-                    <div style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 1rem;">SCENES</div>
-                    <div class="nav-link active" style="font-size: 0.85rem;">1. INT. OFFICE - DAY</div>
-                </aside>
-                <main class="editor-main">
-                    <header class="editor-toolbar">
-                        <select style="background: #222; color: white; border: none; padding: 4px 8px; border-radius: 4px;">
-                            <option>Scene Heading</option>
-                            <option>Action</option>
-                            <option>Character</option>
-                            <option>Dialogue</option>
-                        </select>
-                        <div style="flex:1"></div>
-                        <button class="btn btn-primary" style="padding: 6px 16px; font-size: 0.8rem;">EXPORT PDF</button>
-                    </header>
-                    <div class="script-canvas">
-                        <div class="page" contenteditable="true" spellcheck="false" id="script-engine">
-INT. OFFICE - DAY
-
-Heavy rain drummed against the window. OMESH (30s) stared at the flickering cursor.
-
-<center>OMESH</center>
-<center>It needs to be perfect.</center>
-                        </div>
-                    </div>
-                </main>
-            </div>
-        </section>
-
+                </div>
+            </main>
+        </div>
     </div>
 
-    <div class="modal-overlay" id="google-modal">
-        <div class="google-card">
-            <h2 style="font-size: 1.4rem; margin-bottom: 0.5rem;">Choose an account</h2>
-            <p style="color: #5f6368; font-size: 0.9rem;">to continue to Meticula</p>
-            <div class="user-pill" onclick="navigateTo('view-dash')">
-                <div class="avatar-circle">O</div>
-                <div>
-                    <div style="font-weight: 600;">Omesh Verma</div>
-                    <div style="font-size: 0.8rem; color: #555;">omeshverma565@gmail.com</div>
+    <div id="editor-view" class="app-view">
+        <div class="editor-layout">
+            <header class="editor-header">
+                <button class="back-btn" onclick="closeEditor()">&#10094; Back to Projects</button>
+                <div style="font-weight: bold; font-size: 1.1rem;">Postmartom - Script</div>
+                
+                <div class="header-actions">
+                    <div class="export-group">
+                        <select id="exportFormat" class="export-select">
+                            <option value="pdf">PDF (.pdf)</option>
+                            <option value="txt">Text (.txt)</option>
+                            <option value="html">Web (.html)</option>
+                        </select>
+                        <button class="export-btn" onclick="exportScript()">DOWNLOAD</button>
+                    </div>
+                    <button class="btn-primary">SHARE</button>
                 </div>
+            </header>
+
+            <div class="editor-toolbar">
+                <span style="color: var(--grey-text); font-size: 0.9rem;">Format:</span>
+                <select id="formatSelector" class="format-select">
+                    <option value="scene">Scene Heading</option>
+                    <option value="action">Action</option>
+                    <option value="character">Character</option>
+                    <option value="dialogue">Dialogue</option>
+                    <option value="parenthetical">Parenthetical</option>
+                    <option value="transition">Transition</option>
+                </select>
+            </div>
+
+            <div class="editor-canvas" id="pagesContainer">
+                <div class="script-page" contenteditable="true" spellcheck="false" data-page="1" id="scriptPage1">
+                    <p class="scene"><br></p>
+                </div>
+            </div>
+
+            <div class="status-bar">
+                <span id="saveStatus">Keep typing to auto-generate new pages!</span>
+                <span id="pageCountDisplay">Total Pages: 1</span>
             </div>
         </div>
     </div>
 
     <script>
-        // --- Navigation Controller ---
-        function navigateTo(viewId) {
-            // Close any open modals
-            document.getElementById('google-modal').style.display = 'none';
-            
-            // Switch Active View
-            document.querySelectorAll('.view').forEach(v => {
-                v.classList.remove('active');
-            });
-            document.getElementById(viewId).classList.add('active');
+        // --- 1. VIEW SWITCHING LOGIC ---
+        function openEditor() {
+            document.getElementById('dashboard-view').classList.remove('active');
+            document.getElementById('editor-view').classList.add('active');
+            document.execCommand('defaultParagraphSeparator', false, 'p');
+            document.querySelector('.script-page p').focus();
         }
 
-        // --- Event Listeners ---
-        document.getElementById('form-login').onsubmit = (e) => {
-            e.preventDefault();
-            navigateTo('view-dash');
-        };
-
-        document.getElementById('btn-google').onclick = () => {
-            document.getElementById('google-modal').style.display = 'flex';
-        };
-
-        // Close modal on outside click
-        window.onclick = (e) => {
-            const modal = document.getElementById('google-modal');
-            if (e.target == modal) modal.style.display = "none";
+        function closeEditor() {
+            document.getElementById('editor-view').classList.remove('active');
+            document.getElementById('dashboard-view').classList.add('active');
         }
 
-        // --- Basic Screenplay Formatting Logic ---
-        const editor = document.getElementById('script-engine');
-        editor.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                // Future: Add auto-formatting logic here (e.g., Tab for Character)
+        // --- 2. SCRIPT EDITOR & SMART ENTER LOGIC ---
+        const pagesContainer = document.getElementById('pagesContainer');
+        const formatSelector = document.getElementById('formatSelector');
+        let totalPages = 1;
+
+        function getCurrentParagraph() {
+            let node = document.getSelection().anchorNode;
+            if (!node) return null;
+            while (node && node.nodeName !== 'P' && !node.classList?.contains('script-page')) {
+                node = node.parentNode;
+            }
+            return (node && node.nodeName === 'P') ? node : null;
+        }
+        
+        formatSelector.addEventListener('change', function() {
+            const currentP = getCurrentParagraph();
+            if (currentP) {
+                currentP.className = this.value;
+                currentP.focus();
             }
         });
+
+        pagesContainer.addEventListener('keyup', updateToolbar);
+        pagesContainer.addEventListener('click', updateToolbar);
+
+        function updateToolbar() {
+            const currentP = getCurrentParagraph();
+            if (currentP && currentP.className) {
+                if (Array.from(formatSelector.options).some(opt => opt.value === currentP.className)) {
+                    formatSelector.value = currentP.className;
+                }
+            } else if (currentP && !currentP.className) {
+                currentP.className = 'action';
+                formatSelector.value = 'action';
+            }
+        }
+
+        pagesContainer.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const currentP = getCurrentParagraph();
+                if (!currentP) return;
+
+                setTimeout(() => {
+                    const newP = getCurrentParagraph();
+                    if (!newP || newP === currentP) return;
+
+                    // Smart Formatting Sequence
+                    if (currentP.className === 'character') newP.className = 'dialogue';
+                    else if (currentP.className === 'dialogue') newP.className = 'character';
+                    else if (currentP.className === 'scene') newP.className = 'action';
+                    else if (currentP.className === 'parenthetical') newP.className = 'dialogue';
+                    else newP.className = 'action';
+                    
+                    updateToolbar();
+                }, 10);
+            }
+        });
+
+        // --- 3. AUTO PAGINATION LOGIC ---
+        pagesContainer.addEventListener('input', function(e) {
+            const activePage = e.target.closest('.script-page');
+            if (!activePage) return;
+
+            if (activePage.scrollHeight > activePage.clientHeight) {
+                const overflowP = getCurrentParagraph();
+                if (!overflowP) return;
+
+                let nextPage = activePage.nextElementSibling;
+                if (!nextPage) {
+                    totalPages++;
+                    nextPage = document.createElement('div');
+                    nextPage.className = 'script-page';
+                    nextPage.contentEditable = "true";
+                    nextPage.spellcheck = false;
+                    nextPage.setAttribute('data-page', totalPages);
+                    pagesContainer.appendChild(nextPage);
+                    document.getElementById('pageCountDisplay').innerText = `Total Pages: ${totalPages}`;
+                }
+
+                nextPage.prepend(overflowP);
+                
+                const range = document.createRange();
+                const sel = window.getSelection();
+                range.selectNodeContents(overflowP);
+                range.collapse(false); 
+                sel.removeAllRanges();
+                sel.addRange(range);
+
+                nextPage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+
+        // --- 4. EXPORT / DOWNLOAD LOGIC ---
+        function exportScript() {
+            const format = document.getElementById('exportFormat').value;
+            const statusMsg = document.getElementById('saveStatus');
+            const projectName = "Postmartom_Script";
+
+            statusMsg.innerText = "Processing File... ⏳";
+
+            if (format === 'txt') {
+                saveAsTXT(projectName);
+                showSuccessMessage(format);
+            } else if (format === 'html') {
+                saveAsHTML(projectName);
+                showSuccessMessage(format);
+            } else if (format === 'pdf') {
+                saveAsPDF(projectName, format);
+            }
+        }
+
+        function showSuccessMessage(format) {
+            const statusMsg = document.getElementById('saveStatus');
+            statusMsg.innerText = `Script Saved as ${format.toUpperCase()}! ✅`;
+            statusMsg.style.color = "var(--green-save)";
+            setTimeout(() => {
+                statusMsg.innerText = "Keep typing to auto-generate new pages!";
+                statusMsg.style.color = "var(--grey-text)";
+            }, 3000);
+        }
+
+        // Export as TXT
+        function saveAsTXT(filename) {
+            const pages = document.querySelectorAll('.script-page');
+            let scriptText = "TITLE: POSTMARTOM\n\n";
+
+            pages.forEach((page, index) => {
+                const paragraphs = page.querySelectorAll('p');
+                paragraphs.forEach(p => {
+                    const type = p.className;
+                    let text = p.innerText.trim();
+                    if(!text) return; 
+
+                    if (type === 'character') scriptText += `\n          ${text.toUpperCase()}\n`;
+                    else if (type === 'dialogue') scriptText += `     ${text}\n`;
+                    else if (type === 'parenthetical') scriptText += `        (${text})\n`;
+                    else if (type === 'scene') scriptText += `\n${text.toUpperCase()}\n\n`;
+                    else if (type === 'transition') scriptText += `\n                                      ${text.toUpperCase()}\n\n`;
+                    else scriptText += `${text}\n\n`;
+                });
+                scriptText += `\n================ Page ${index + 1} ================\n\n`;
+            });
+
+            downloadFile(scriptText, `${filename}.txt`, 'text/plain');
+        }
+
+        // Export as HTML (Offline Viewer)
+        function saveAsHTML(filename) {
+            const css = document.querySelector('style').innerText;
+            // Get exact HTML content of pages
+            let pagesHTML = "";
+            document.querySelectorAll('.script-page').forEach(page => {
+                pagesHTML += `<div class="script-page">${page.innerHTML}</div>`;
+            });
+
+            const htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>${filename}</title>
+                    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+                    <style>
+                        body { background: #333; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 40px;}
+                        ${css}
+                    </style>
+                </head>
+                <body>${pagesHTML}</body>
+                </html>
+            `;
+            downloadFile(htmlContent, `${filename}.html`, 'text/html');
+        }
+
+        // Export as PDF (Using HTML2PDF Library)
+        function saveAsPDF(filename, format) {
+            // Create a temporary container without gaps/scrolls for perfect PDF generation
+            const element = document.createElement('div');
+            document.querySelectorAll('.script-page').forEach(page => {
+                const clone = page.cloneNode(true);
+                clone.style.boxShadow = 'none'; // remove shadow for PDF
+                clone.style.margin = '0';
+                element.appendChild(clone);
+            });
+
+            const opt = {
+                margin:       0,
+                filename:     `${filename}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            // Generate PDF
+            html2pdf().set(opt).from(element).save().then(() => {
+                showSuccessMessage(format);
+            });
+        }
+
+        // Helper function to trigger download
+        function downloadFile(content, fileName, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
     </script>
 </body>
 </html>
