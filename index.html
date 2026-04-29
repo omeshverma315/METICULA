@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meticula - Screenplay Studio</title>
     
-    <!-- External Fonts and Scripts for Editor -->
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
@@ -35,132 +34,53 @@
             --font-script: 'Courier Prime', Courier, monospace;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: var(--font-family);
-            background-color: var(--bg-deep);
-            color: var(--white);
-            height: 100vh;
-            overflow: hidden;
+            font-family: var(--font-family); background-color: var(--bg-deep); color: var(--white);
+            height: 100vh; overflow: hidden;
             background-image: radial-gradient(circle at top right, #2a080a 0%, transparent 40%),
                               radial-gradient(circle at bottom left, #121216 0%, transparent 40%);
         }
 
-        /* View Controllers (For switching pages smoothly) */
         .app-view {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.5s ease, visibility 0.5s;
-            display: flex;
-            flex-direction: column;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; visibility: hidden; transition: opacity 0.5s ease, visibility 0.5s;
+            display: flex; flex-direction: column;
         }
-
-        .app-view.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        .app-view.active { opacity: 1; visibility: visible; }
 
         /* =========================================
            1. LOGIN VIEW STYLES
            ========================================= */
-        #login-view {
-            justify-content: center;
-            align-items: center;
-        }
-
+        #login-view { justify-content: center; align-items: center; }
         .login-container {
-            width: 100%;
-            max-width: 420px;
-            padding: 3rem 2.5rem;
-            text-align: center;
-            background: var(--bg-card);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            transform: translateY(20px);
-            animation: slideUp 0.6s ease forwards;
+            width: 100%; max-width: 420px; padding: 3rem 2.5rem; text-align: center;
+            background: var(--bg-card); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color); border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            transform: translateY(20px); animation: slideUp 0.6s ease forwards;
         }
-
-        @keyframes slideUp {
-            to { transform: translateY(0); }
-        }
-
-        .logo {
-            font-size: 3rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: -1px;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(to right, #fff, #a0a0a0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .login-container h2 {
-            font-size: 1.1rem;
-            font-weight: 400;
-            margin-bottom: 2rem;
-            color: var(--grey-text);
-        }
-
+        @keyframes slideUp { to { transform: translateY(0); } }
+        .logo { font-size: 3rem; font-weight: 900; text-transform: uppercase; letter-spacing: -1px; margin-bottom: 0.5rem; background: linear-gradient(to right, #fff, #a0a0a0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .login-container h2 { font-size: 1.1rem; font-weight: 400; margin-bottom: 2rem; color: var(--grey-text); }
         .input-group { position: relative; margin-bottom: 1rem; }
-        
-        .input-group input {
-            width: 100%;
-            padding: 1rem 1.2rem;
-            background-color: rgba(0,0,0,0.3);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: white;
-            font-size: 1rem;
-            outline: none;
-            transition: all 0.3s;
+        .input-group input, .modal-input {
+            width: 100%; padding: 1rem 1.2rem; background-color: rgba(0,0,0,0.3); border: 1px solid var(--border-color);
+            border-radius: 8px; color: white; font-size: 1rem; outline: none; transition: all 0.3s;
         }
-
-        .input-group input:focus {
-            border-color: var(--red-accent);
-            box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.2);
-        }
-
-        .toggle-password {
-            position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
-            background: none; border: none; color: var(--grey-text); cursor: pointer;
-        }
-
-        .checkbox-group {
-            display: flex; align-items: center; margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--grey-text);
-        }
-        
+        .modal-input { background-color: white; color: #202124; border: 1px solid #dadce0; margin-bottom: 20px;}
+        .modal-input:focus { border-color: #1a73e8; }
+        .input-group input:focus { border-color: var(--red-accent); box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.2); }
+        .toggle-password { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--grey-text); cursor: pointer; }
+        .checkbox-group { display: flex; align-items: center; margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--grey-text); }
         .checkbox-group input { margin-right: 0.5rem; accent-color: var(--red-accent); }
-
-        .btn-primary {
-            width: 100%; padding: 1rem; background-color: var(--red-accent); color: white;
-            border: none; border-radius: 8px; font-size: 1rem; font-weight: bold;
-            cursor: pointer; transition: background 0.3s, transform 0.1s;
-        }
+        .btn-primary { width: 100%; padding: 1rem; background-color: var(--red-accent); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.3s, transform 0.1s; }
         .btn-primary:hover { background-color: var(--red-hover); }
         .btn-primary:active { transform: scale(0.98); }
-
         .divider { margin: 1.5rem 0; color: var(--grey-text); font-size: 0.85rem; display: flex; align-items: center; }
         .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border-color); margin: 0 10px; }
-
-        .btn-social {
-            width: 100%; padding: 0.8rem; background-color: transparent;
-            border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem;
-            color: var(--white); display: flex; align-items: center; justify-content: center; gap: 10px;
-            cursor: pointer; margin-bottom: 1rem; transition: background 0.3s;
-        }
+        .btn-social { width: 100%; padding: 0.8rem; background-color: transparent; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; color: var(--white); display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; margin-bottom: 1rem; transition: background 0.3s; }
         .btn-social:hover { background-color: rgba(255,255,255,0.05); }
-
         .help-links { margin-top: 1.5rem; font-size: 0.85rem; }
         .help-links a { color: var(--grey-text); text-decoration: none; margin: 0 0.5rem; transition: color 0.2s;}
         .help-links a:hover { color: var(--white); }
@@ -168,188 +88,108 @@
         /* =========================================
            2. DASHBOARD VIEW STYLES
            ========================================= */
-        .topbar {
-            height: 65px; background-color: var(--black-dark); border-bottom: 1px solid var(--border-color);
-            display: flex; justify-content: space-between; align-items: center; padding: 0 24px; z-index: 10;
-        }
-
+        .topbar { height: 65px; background-color: var(--black-dark); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 24px; z-index: 10; }
         .topbar-left { font-weight: 700; font-size: 1.2rem; letter-spacing: 1px; }
         .topbar-right { display: flex; align-items: center; gap: 24px; }
-        
-        .btn-outline {
-            background: transparent; border: 1px solid var(--grey-text); color: var(--white);
-            padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 500; transition: all 0.2s;
-        }
+        .btn-outline { background: transparent; border: 1px solid var(--grey-text); color: var(--white); padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
         .btn-outline:hover { border-color: var(--white); }
-
         .user-profile { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.9rem; }
-        .user-avatar {
-            width: 36px; height: 36px; border-radius: 50%; background-color: var(--red-accent);
-            display: flex; justify-content: center; align-items: center; font-weight: bold;
-        }
-
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background-color: var(--red-accent); display: flex; justify-content: center; align-items: center; font-weight: bold; }
         .main-layout { display: flex; flex: 1; height: calc(100vh - 65px); }
-
-        .sidebar {
-            width: 260px; background-color: var(--black-dark); border-right: 1px solid var(--border-color);
-            display: flex; flex-direction: column; padding: 30px 0;
-        }
-
+        .sidebar { width: 260px; background-color: var(--black-dark); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 30px 0; }
         .studio-header { display: flex; align-items: center; gap: 15px; padding: 0 24px; margin-bottom: 40px; }
         .studio-icon { width: 45px; height: 45px; background-color: var(--red-accent); border-radius: 12px; }
         .studio-info h2 { font-size: 1.2rem; font-weight: 500; }
         .studio-info p { font-size: 0.75rem; color: var(--grey-text); text-transform: uppercase; margin-top: 4px; }
-
-        .btn-create {
-            margin: 0 24px 30px 24px; background-color: var(--red-accent); color: var(--white);
-            border: none; padding: 12px; border-radius: 8px; font-size: 1rem; font-weight: bold;
-            cursor: pointer; transition: background 0.2s; text-align: center;
-        }
+        .btn-create { margin: 0 24px 30px 24px; background-color: var(--red-accent); color: var(--white); border: none; padding: 12px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.2s; text-align: center; }
         .btn-create:hover { background-color: var(--red-hover); }
-
         .nav-menu { list-style: none; display: flex; flex-direction: column; }
         .nav-item { padding: 15px 24px; cursor: pointer; color: var(--grey-text); font-size: 0.95rem; transition: all 0.2s; }
         .nav-item:hover { color: var(--white); background-color: rgba(255, 255, 255, 0.05); }
         .nav-item.active { color: var(--white); border-left: 4px solid var(--red-accent); background-color: var(--black-light); font-weight: 500; }
         .nav-bottom { margin-top: auto; }
-
         .content { flex: 1; padding: 40px; overflow-y: auto; background-color: transparent; }
-
-        .project-card {
-            background-color: var(--black-light); border-radius: 12px; padding: 20px;
-            display: flex; align-items: center; gap: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            transition: transform 0.2s, box-shadow 0.2s, border 0.2s; cursor: pointer; border: 1px solid transparent;
-            animation: fadeInRight 0.5s ease forwards;
-        }
-        @keyframes fadeInRight {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
+        
+        .projects-grid { display: flex; flex-direction: column; gap: 15px; }
+        .project-card { background-color: var(--black-light); border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: transform 0.2s, box-shadow 0.2s, border 0.2s; cursor: pointer; border: 1px solid transparent; animation: fadeInRight 0.5s ease forwards; }
+        @keyframes fadeInRight { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
         .project-card:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.4); border-color: var(--red-accent); }
-
         .project-drag-icon { color: var(--grey-text); font-size: 1.2rem; cursor: grab; }
-        .project-icon { width: 50px; height: 50px; background-color: #6a1b9a; border-radius: 12px; }
+        .project-icon { width: 50px; height: 50px; background-color: #6a1b9a; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.5rem; color: white;}
         .project-details { flex: 1; }
         .project-type { font-size: 0.75rem; color: var(--grey-text); text-transform: uppercase; letter-spacing: 1px; }
         .project-title { font-size: 1.3rem; font-weight: 500; margin: 4px 0; color: var(--white); }
         .project-meta { font-size: 0.85rem; color: var(--grey-text); }
-        
         .project-owner { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .project-owner .avatar {
-            width: 35px; height: 35px; border-radius: 50%; background-color: var(--grey-main);
-            border: 2px solid var(--red-accent); display: flex; justify-content: center; align-items: center; font-size: 0.8rem;
-        }
+        .project-owner .avatar { width: 35px; height: 35px; border-radius: 50%; background-color: var(--grey-main); border: 2px solid var(--red-accent); display: flex; justify-content: center; align-items: center; font-size: 0.8rem; }
         .project-owner span { font-size: 0.75rem; color: var(--grey-text); }
+
+        .no-projects { text-align: center; padding: 40px; color: var(--grey-text); border: 2px dashed var(--border-color); border-radius: 12px; }
 
         /* =========================================
            3. MODAL STYLES (Light Theme)
            ========================================= */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7); justify-content: center; align-items: center;
-            z-index: 1000; backdrop-filter: blur(4px);
-        }
-        .google-modal {
-            background: white; width: 400px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            overflow: hidden; font-family: 'Roboto', Arial, sans-serif; color: #202124; animation: fadeIn 0.2s ease-out;
-        }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
+        .google-modal { background: white; width: 400px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; font-family: 'Roboto', Arial, sans-serif; color: #202124; animation: fadeIn 0.2s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .modal-header {
-            display: flex; justify-content: space-between; align-items: center; padding: 10px 16px;
-            background: #f1f3f4; border-bottom: 1px solid #dadce0; font-size: 0.85rem; color: #5f6368;
-        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: #f1f3f4; border-bottom: 1px solid #dadce0; font-size: 0.85rem; color: #5f6368; }
         .modal-header-actions span { margin-left: 12px; cursor: pointer; font-size: 1.2rem; }
         .modal-header-actions span:hover { color: black; }
         .modal-body { padding: 24px 32px; text-align: left; }
-        .modal-google-logo { display: flex; align-items: center; gap: 8px; font-weight: 500; margin-bottom: 24px; color: #5f6368; }
         .modal-title { font-size: 1.5rem; font-weight: 400; margin-bottom: 8px; }
         .modal-subtitle { font-size: 1rem; margin-bottom: 24px; }
-        .modal-subtitle a { color: #1a73e8; text-decoration: none; font-weight: 500;}
         .account-list { list-style: none; border-top: 1px solid #dadce0; margin-bottom: 24px; }
         .account-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #dadce0; cursor: pointer; transition: background 0.2s; }
         .account-item:hover { background-color: #f8f9fa; }
-        .modal-avatar {
-            width: 32px; height: 32px; border-radius: 50%; background: #1a73e8; color: white;
-            display: flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; margin-right: 12px;
-        }
+        .modal-avatar { width: 32px; height: 32px; border-radius: 50%; background: #1a73e8; color: white; display: flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; margin-right: 12px; }
         .account-info { flex-grow: 1; }
         .account-name { font-size: 0.95rem; font-weight: 500; color: #3c4043; }
         .account-email { font-size: 0.85rem; color: #5f6368; }
-        .modal-footer { font-size: 0.85rem; color: #5f6368; line-height: 1.5; }
-        .modal-footer a { color: #1a73e8; text-decoration: none; }
 
         /* =========================================
            4. EDITOR VIEW STYLES
            ========================================= */
         .editor-layout { display: flex; flex-direction: column; height: 100vh; width: 100%; background-color: var(--bg-deep); }
-        
         .btn-editor { padding: 8px 16px; background-color: var(--red-accent); color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-editor:hover { opacity: 0.8; transform: scale(0.98); }
-        
         .back-btn { background: none; border: none; color: var(--grey-text); cursor: pointer; font-size: 1rem; }
         .back-btn:hover { color: var(--white); }
-
         .export-group { display: flex; align-items: center; background: #111; border: 1px solid var(--green-save); border-radius: 4px; overflow: hidden;}
         .export-select { background: #111; color: white; border: none; padding: 8px 12px; outline: none; cursor: pointer; font-family: var(--font-family); font-weight: 500;}
         .export-btn { background: var(--green-save); color: white; border: none; padding: 8px 16px; font-weight: bold; cursor: pointer; transition: 0.2s;}
         .export-btn:hover { background: #218838; }
-
         .editor-header { height: 60px; background: var(--black-dark); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0;}
         .header-actions { display: flex; gap: 15px; align-items: center; }
-
-        /* Formatting Toolbar */
         .editor-toolbar { height: 50px; background: var(--black-light); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 20px; gap: 15px; flex-shrink: 0;}
         .format-select { background: #111; color: white; border: 1px solid var(--grey-text); padding: 8px 12px; border-radius: 4px; outline: none; cursor: pointer; font-family: var(--font-family); }
         
-        /* Canvas */
-        .editor-canvas { 
-            flex: 1; 
-            background-color: var(--grey-editor); 
-            overflow-y: auto; 
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            padding: 40px 20px; 
-            gap: 40px; 
-        }
+        .editor-canvas { flex: 1; background-color: var(--grey-editor); overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; gap: 40px; }
         
         /* Individual Page Styles */
         .script-page {
-            background-color: var(--white); color: #000;
-            width: 8.5in; 
-            height: 11in; 
-            padding: 1in 1in 1in 1.5in; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-            font-family: var(--font-script);
-            font-size: 12pt;
-            line-height: 1.2;
-            outline: none;
-            overflow: hidden; 
-            position: relative;
-            flex-shrink: 0;
+            background-color: var(--white); color: #000; width: 8.5in; height: 11in; padding: 1in 1in 1in 1.5in; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4); font-family: var(--font-script); font-size: 12pt;
+            line-height: 1.2; outline: none; overflow: hidden; position: relative; flex-shrink: 0; z-index: 1;
         }
 
-        .script-page::before {
-            content: attr(data-page) ".";
-            position: absolute;
-            top: 0.5in;
-            right: 1in;
-            font-family: var(--font-script);
-            font-size: 12pt;
-            color: #666;
+        .script-page::before { content: attr(data-page) "."; position: absolute; top: 0.5in; right: 1in; font-family: var(--font-script); font-size: 12pt; color: #666; z-index: 10; }
+        
+        /* Customizable Watermark */
+        .script-page::after {
+            content: attr(data-watermark); position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg); font-size: 80px; color: rgba(0, 0, 0, 0.07);
+            font-family: var(--font-family); font-weight: 900; text-transform: uppercase;
+            pointer-events: none; white-space: nowrap; z-index: 0; user-select: none;
         }
 
-        /* Screenplay Formatting Rules */
-        .script-page p { margin: 0 0 1em 0; min-height: 1em; white-space: pre-wrap; outline: none; }
+        .script-page p { position: relative; z-index: 2; margin: 0 0 1em 0; min-height: 1em; white-space: pre-wrap; outline: none; }
         .script-page p:empty::before { content: "\FEFF"; }
-
         .script-page p.scene { text-transform: uppercase; font-weight: bold; margin-top: 1.5em; }
         .script-page p.action { text-transform: none; }
         .script-page p.character { text-transform: uppercase; margin-left: 2.2in; margin-bottom: 0; }
         .script-page p.dialogue { margin-left: 1in; margin-right: 1.5in; margin-top: 0; }
         .script-page p.parenthetical { margin-left: 1.5in; margin-top: 0; margin-bottom: 0; }
         .script-page p.transition { text-align: right; text-transform: uppercase; margin-top: 1em; }
-
         .status-bar { height: 35px; background: var(--black-dark); border-top: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; color: var(--grey-text); font-size: 0.85rem; flex-shrink: 0;}
 
         @media print {
@@ -360,50 +200,32 @@
 </head>
 <body>
 
-    <!-- 1. LOGIN VIEW -->
     <div id="login-view" class="app-view active">
         <div class="login-container">
             <h1 class="logo">METICULA</h1>
             <h2>Log in to your studio</h2>
-
             <form id="loginForm">
                 <div class="input-group">
                     <input type="email" placeholder="Email Address" required>
                 </div>
-                
                 <div class="input-group">
                     <input type="password" id="passwordField" placeholder="Password" required>
                     <button type="button" class="toggle-password" id="togglePasswordBtn">Show</button>
                 </div>
-
                 <div class="checkbox-group">
                     <input type="checkbox" id="keepLoggedIn" checked>
                     <label for="keepLoggedIn">Keep me logged in 4 days</label>
                 </div>
-
                 <button type="submit" class="btn-primary">ENTER STUDIO</button>
             </form>
-
             <div class="divider">or</div>
-
             <button type="button" class="btn-social" id="googleBtn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                </svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
                 Continue with Google
             </button>
-
-            <div class="help-links">
-                <a href="#">Forgot password?</a> • 
-                <a href="#">Create an account</a>
-            </div>
         </div>
     </div>
 
-    <!-- 2. DASHBOARD VIEW -->
     <div id="dashboard-view" class="app-view">
         <header class="topbar">
             <div class="topbar-left">METICULA STUDIO</div>
@@ -425,51 +247,30 @@
                         <p>Basic Scriptwriting</p>
                     </div>
                 </div>
-
-                <button class="btn-create">+ NEW PROJECT</button>
-
+                <button class="btn-create" id="openNewProjectModalBtn">+ NEW PROJECT</button>
                 <ul class="nav-menu">
                     <li class="nav-item active">Projects</li>
                     <li class="nav-item">Templates</li>
                     <li class="nav-item">Settings</li>
                     <li class="nav-item">Trash</li>
                 </ul>
-
-                <ul class="nav-menu nav-bottom">
-                    <li class="nav-item">Help Center</li>
-                </ul>
             </aside>
 
             <main class="content">
                 <h2 style="margin-bottom: 24px; font-weight: 400;">Recent Projects</h2>
-                
-                <!-- This card now opens the editor via onclick -->
-                <div class="project-card" onclick="openEditor()">
-                    <div class="project-drag-icon">&#8801;</div>
-                    <div class="project-icon"></div>
-                    <div class="project-details">
-                        <div class="project-type">Film & TV Screenplay</div>
-                        <div class="project-title">Postmartom</div>
-                        <div class="project-meta">Last edited: Today, 12:32 AM</div>
-                    </div>
-                    <div class="project-owner">
-                        <div class="avatar">O</div>
-                        <span>Owner</span>
-                    </div>
-                </div>
+                <div id="recentProjectsList" class="projects-grid"></div>
             </main>
         </div>
     </div>
 
-    <!-- 3. EDITOR VIEW -->
     <div id="editor-view" class="app-view">
         <div class="editor-layout">
             <header class="editor-header">
-                <!-- Close editor and return to dashboard -->
                 <button class="back-btn" onclick="closeEditor()">&#10094; Back to Projects</button>
-                <div style="font-weight: bold; font-size: 1.1rem;">Postmartom - Script</div>
+                <div id="editorTitle" style="font-weight: bold; font-size: 1.1rem;">Untitled Project - Script</div>
                 
                 <div class="header-actions">
+                    <button class="btn-outline" onclick="setWatermark()">Watermark</button>
                     <div class="export-group">
                         <select id="exportFormat" class="export-select">
                             <option value="pdf">PDF (.pdf)</option>
@@ -495,35 +296,23 @@
             </div>
 
             <div class="editor-canvas" id="pagesContainer">
-                <div class="script-page" contenteditable="true" spellcheck="false" data-page="1" id="scriptPage1">
-                    <p class="scene"><br></p>
                 </div>
-            </div>
 
             <div class="status-bar">
-                <span id="saveStatus">Keep typing to auto-generate new pages!</span>
+                <span id="saveStatus">All changes saved locally.</span>
                 <span id="pageCountDisplay">Total Pages: 1</span>
             </div>
         </div>
     </div>
 
-    <!-- Google Login Modal -->
     <div id="googleModalOverlay" class="modal-overlay">
         <div class="google-modal">
             <div class="modal-header">
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                    Sign in - Google accounts
-                </div>
-                <div class="modal-header-actions">
-                    <span id="closeModalBtn" title="Close">&#10005;</span>
-                </div>
+                <div>Sign in - Google accounts</div>
+                <div class="modal-header-actions"><span id="closeModalBtn" title="Close">&#10005;</span></div>
             </div>
-
             <div class="modal-body">
                 <h3 class="modal-title">Choose an account</h3>
-                <p class="modal-subtitle">to continue to <a href="#">meticula.com</a></p>
-
                 <ul class="account-list">
                     <li class="account-item" onclick="simulateLogin()">
                         <div class="modal-avatar">O</div>
@@ -537,56 +326,109 @@
         </div>
     </div>
 
+    <div id="newProjectModalOverlay" class="modal-overlay">
+        <div class="google-modal" style="width: 350px;">
+            <div class="modal-header">
+                <div>Create New Project</div>
+                <div class="modal-header-actions"><span id="closeNewProjectBtn" title="Close">&#10005;</span></div>
+            </div>
+            <div class="modal-body">
+                <h3 class="modal-title" style="font-size: 1.2rem;">Project Name</h3>
+                <input type="text" id="newProjectName" class="modal-input" placeholder="e.g. My Awesome Screenplay">
+                <button class="btn-primary" id="saveNewProjectBtn" style="border-radius: 4px;">Save & Open</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Data Management Variables
+        let savedProjects = JSON.parse(localStorage.getItem('meticulaProjects')) || [];
+        let currentProjectId = null;
+        let activeWatermark = "";
+        let saveTimeout;
+
         document.addEventListener("DOMContentLoaded", function() {
-            
-            // --- 1. Password Toggle ---
-            const passwordField = document.getElementById("passwordField");
-            const togglePasswordBtn = document.getElementById("togglePasswordBtn");
-            
-            togglePasswordBtn.addEventListener("click", function() {
-                if (passwordField.type === "password") {
-                    passwordField.type = "text";
-                    togglePasswordBtn.textContent = "Hide";
-                } else {
-                    passwordField.type = "password";
-                    togglePasswordBtn.textContent = "Show";
-                }
+            // UI Toggles
+            document.getElementById("togglePasswordBtn").addEventListener("click", function() {
+                const pass = document.getElementById("passwordField");
+                if (pass.type === "password") { pass.type = "text"; this.textContent = "Hide"; } 
+                else { pass.type = "password"; this.textContent = "Show"; }
             });
 
-            // --- 2. Google Modal Logic ---
-            const googleBtn = document.getElementById("googleBtn");
-            const modalOverlay = document.getElementById("googleModalOverlay");
-            const closeModalBtn = document.getElementById("closeModalBtn");
-
-            googleBtn.addEventListener("click", () => modalOverlay.style.display = "flex");
-            closeModalBtn.addEventListener("click", () => modalOverlay.style.display = "none");
-            modalOverlay.addEventListener("click", (e) => {
-                if (e.target === modalOverlay) modalOverlay.style.display = "none";
-            });
-
-            // --- 3. Login View Transition Logic ---
-            const loginForm = document.getElementById("loginForm");
+            // Modals
+            document.getElementById("googleBtn").addEventListener("click", () => document.getElementById("googleModalOverlay").style.display = "flex");
+            document.getElementById("closeModalBtn").addEventListener("click", () => document.getElementById("googleModalOverlay").style.display = "none");
             
-            loginForm.addEventListener("submit", function(e) {
-                e.preventDefault(); 
-                simulateLogin();
+            const newProjOverlay = document.getElementById("newProjectModalOverlay");
+            document.getElementById("openNewProjectModalBtn").addEventListener("click", () => {
+                document.getElementById("newProjectName").value = "";
+                newProjOverlay.style.display = "flex";
+                document.getElementById("newProjectName").focus();
+            });
+            document.getElementById("closeNewProjectBtn").addEventListener("click", () => newProjOverlay.style.display = "none");
+            
+            document.getElementById("saveNewProjectBtn").addEventListener("click", () => {
+                const name = document.getElementById("newProjectName").value.trim() || "Untitled Project";
+                startNewProject(name);
+                newProjOverlay.style.display = "none";
             });
 
-            // --- 4. Initialize Editor Defaults ---
+            document.getElementById("newProjectName").addEventListener("keypress", function(e) {
+                if (e.key === "Enter") { e.preventDefault(); document.getElementById("saveNewProjectBtn").click(); }
+            });
+
+            // Login
+            document.getElementById("loginForm").addEventListener("submit", function(e) { e.preventDefault(); simulateLogin(); });
             document.execCommand('defaultParagraphSeparator', false, 'p');
+
+            // Render Dashboard on Load
+            renderDashboard();
         });
 
-        // Simulate Login (Login -> Dashboard)
+        // ----------------------------------------
+        // DATA & DASHBOARD LOGIC
+        // ----------------------------------------
+        function renderDashboard() {
+            const list = document.getElementById("recentProjectsList");
+            list.innerHTML = "";
+
+            if (savedProjects.length === 0) {
+                list.innerHTML = `<div class="no-projects">No projects yet. Click '+ NEW PROJECT' to start writing.</div>`;
+                return;
+            }
+
+            // Sort by most recent first
+            savedProjects.sort((a, b) => b.lastEditedMs - a.lastEditedMs);
+
+            savedProjects.forEach(proj => {
+                const initial = proj.name.charAt(0).toUpperCase();
+                const card = document.createElement("div");
+                card.className = "project-card";
+                card.onclick = () => openExistingProject(proj.id);
+                card.innerHTML = `
+                    <div class="project-drag-icon">&#8801;</div>
+                    <div class="project-icon" style="background-color: hsl(${Math.random() * 360}, 70%, 30%)">${initial}</div>
+                    <div class="project-details">
+                        <div class="project-type">Film & TV Screenplay</div>
+                        <div class="project-title">${proj.name}</div>
+                        <div class="project-meta">Last edited: ${proj.lastEditedStr}</div>
+                    </div>
+                    <div class="project-owner">
+                        <div class="avatar">O</div>
+                        <span>Owner</span>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
         function simulateLogin() {
             document.getElementById("googleModalOverlay").style.display = "none";
             document.getElementById("login-view").classList.remove("active");
-            setTimeout(() => {
-                document.getElementById("dashboard-view").classList.add("active");
-            }, 300); 
+            renderDashboard();
+            setTimeout(() => document.getElementById("dashboard-view").classList.add("active"), 300); 
         }
 
-        // Logout (Dashboard -> Login)
         function logout() {
             document.getElementById("dashboard-view").classList.remove("active");
             setTimeout(() => {
@@ -595,48 +437,135 @@
             }, 300);
         }
 
-        // Open Editor (Dashboard -> Editor)
+        function startNewProject(name) {
+            const newId = 'proj_' + Date.now();
+            const now = new Date();
+            const timeStr = now.toLocaleDateString() + ", " + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            const defaultHTML = `<div class="script-page" contenteditable="true" spellcheck="false" data-page="1" data-watermark="" id="scriptPage1"><p class="scene"><br></p></div>`;
+
+            const newProject = {
+                id: newId,
+                name: name,
+                lastEditedMs: Date.now(),
+                lastEditedStr: timeStr,
+                pagesHTML: defaultHTML,
+                watermark: ""
+            };
+
+            savedProjects.push(newProject);
+            saveToLocalStorage();
+            
+            openExistingProject(newId); // Load the newly created project
+        }
+
+        function openExistingProject(id) {
+            const proj = savedProjects.find(p => p.id === id);
+            if (!proj) return;
+
+            currentProjectId = id;
+            activeWatermark = proj.watermark || "";
+            document.getElementById("editorTitle").innerText = `${proj.name} - Script`;
+            
+            const container = document.getElementById('pagesContainer');
+            container.innerHTML = proj.pagesHTML;
+            
+            // Reattach watermark logic if needed
+            const pages = document.querySelectorAll('.script-page');
+            document.getElementById('pageCountDisplay').innerText = `Total Pages: ${pages.length}`;
+            
+            openEditor();
+        }
+
+        // Auto-Save Logic
+        document.getElementById('pagesContainer').addEventListener('input', () => {
+            clearTimeout(saveTimeout);
+            document.getElementById('saveStatus').innerText = "Saving... ⏳";
+            document.getElementById('saveStatus').style.color = "var(--grey-text)";
+            
+            saveTimeout = setTimeout(() => {
+                saveCurrentProjectData();
+            }, 1000); // Save 1 second after user stops typing
+        });
+
+        function saveCurrentProjectData() {
+            if (!currentProjectId) return;
+            
+            const projIndex = savedProjects.findIndex(p => p.id === currentProjectId);
+            if (projIndex > -1) {
+                const now = new Date();
+                savedProjects[projIndex].pagesHTML = document.getElementById('pagesContainer').innerHTML;
+                savedProjects[projIndex].watermark = activeWatermark;
+                savedProjects[projIndex].lastEditedMs = Date.now();
+                savedProjects[projIndex].lastEditedStr = now.toLocaleDateString() + ", " + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                saveToLocalStorage();
+                
+                const status = document.getElementById('saveStatus');
+                status.innerText = "Saved to browser. ✅";
+                status.style.color = "var(--green-save)";
+                setTimeout(() => { status.style.color = "var(--grey-text)"; }, 2000);
+            }
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('meticulaProjects', JSON.stringify(savedProjects));
+        }
+
+        // View Transitions
         function openEditor() {
             document.getElementById("dashboard-view").classList.remove("active");
             setTimeout(() => {
                 document.getElementById("editor-view").classList.add("active");
-                // Focus inside editor once visible
                 const firstP = document.querySelector('.script-page p');
-                if(firstP) firstP.focus();
+                if(firstP) {
+                    // Move cursor to end of the content
+                    const range = document.createRange();
+                    const sel = window.getSelection();
+                    range.selectNodeContents(firstP);
+                    range.collapse(false);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                    firstP.focus();
+                }
             }, 300);
         }
 
-        // Close Editor (Editor -> Dashboard)
         function closeEditor() {
+            saveCurrentProjectData(); // Final save before leaving
+            renderDashboard(); // Refresh dashboard list
             document.getElementById("editor-view").classList.remove("active");
             setTimeout(() => {
                 document.getElementById("dashboard-view").classList.add("active");
             }, 300);
         }
 
-
-        // ==========================================
-        // EDITOR LOGIC
-        // ==========================================
+        // ----------------------------------------
+        // EDITOR & WATERMARK LOGIC
+        // ----------------------------------------
         const pagesContainer = document.getElementById('pagesContainer');
         const formatSelector = document.getElementById('formatSelector');
-        let totalPages = 1;
+
+        function setWatermark() {
+            const userInput = prompt("Enter watermark text (leave empty to remove):", activeWatermark);
+            if (userInput !== null) {
+                activeWatermark = userInput.trim();
+                const pages = document.querySelectorAll('.script-page');
+                pages.forEach(page => { page.setAttribute('data-watermark', activeWatermark); });
+                saveCurrentProjectData(); // Save watermark change
+            }
+        }
 
         function getCurrentParagraph() {
             let node = document.getSelection().anchorNode;
             if (!node) return null;
-            while (node && node.nodeName !== 'P' && !node.classList?.contains('script-page')) {
-                node = node.parentNode;
-            }
+            while (node && node.nodeName !== 'P' && !node.classList?.contains('script-page')) { node = node.parentNode; }
             return (node && node.nodeName === 'P') ? node : null;
         }
         
         formatSelector.addEventListener('change', function() {
             const currentP = getCurrentParagraph();
-            if (currentP) {
-                currentP.className = this.value;
-                currentP.focus();
-            }
+            if (currentP) { currentP.className = this.value; currentP.focus(); saveCurrentProjectData(); }
         });
 
         pagesContainer.addEventListener('keyup', updateToolbar);
@@ -658,7 +587,6 @@
             if (e.key === 'Enter') {
                 const currentP = getCurrentParagraph();
                 if (!currentP) return;
-
                 setTimeout(() => {
                     const newP = getCurrentParagraph();
                     if (!newP || newP === currentP) return;
@@ -686,14 +614,15 @@
 
                 let nextPage = activePage.nextElementSibling;
                 if (!nextPage) {
-                    totalPages++;
+                    const currentPageCount = document.querySelectorAll('.script-page').length;
                     nextPage = document.createElement('div');
                     nextPage.className = 'script-page';
                     nextPage.contentEditable = "true";
                     nextPage.spellcheck = false;
-                    nextPage.setAttribute('data-page', totalPages);
+                    nextPage.setAttribute('data-page', currentPageCount + 1);
+                    nextPage.setAttribute('data-watermark', activeWatermark); 
                     pagesContainer.appendChild(nextPage);
-                    document.getElementById('pageCountDisplay').innerText = `Total Pages: ${totalPages}`;
+                    document.getElementById('pageCountDisplay').innerText = `Total Pages: ${currentPageCount + 1}`;
                 }
 
                 nextPage.prepend(overflowP);
@@ -709,38 +638,31 @@
             }
         });
 
-        // Export Logic
+        // ----------------------------------------
+        // EXPORT LOGIC
+        // ----------------------------------------
         function exportScript() {
+            const proj = savedProjects.find(p => p.id === currentProjectId);
+            if(!proj) return;
             const format = document.getElementById('exportFormat').value;
-            const statusMsg = document.getElementById('saveStatus');
-            const projectName = "Postmartom_Script";
+            const formattedName = proj.name.replace(/\s+/g, '_');
+            document.getElementById('saveStatus').innerText = "Processing File... ⏳";
 
-            statusMsg.innerText = "Processing File... ⏳";
-
-            if (format === 'txt') {
-                saveAsTXT(projectName);
-                showSuccessMessage(format);
-            } else if (format === 'html') {
-                saveAsHTML(projectName);
-                showSuccessMessage(format);
-            } else if (format === 'pdf') {
-                saveAsPDF(projectName, format);
-            }
+            if (format === 'txt') { saveAsTXT(formattedName, proj.name); showSuccessMessage(format); } 
+            else if (format === 'html') { saveAsHTML(formattedName, proj.name); showSuccessMessage(format); } 
+            else if (format === 'pdf') { saveAsPDF(formattedName, format); }
         }
 
         function showSuccessMessage(format) {
             const statusMsg = document.getElementById('saveStatus');
             statusMsg.innerText = `Script Saved as ${format.toUpperCase()}! ✅`;
             statusMsg.style.color = "var(--green-save)";
-            setTimeout(() => {
-                statusMsg.innerText = "Keep typing to auto-generate new pages!";
-                statusMsg.style.color = "var(--grey-text)";
-            }, 3000);
+            setTimeout(() => { statusMsg.style.color = "var(--grey-text)"; }, 3000);
         }
 
-        function saveAsTXT(filename) {
+        function saveAsTXT(filename, realName) {
             const pages = document.querySelectorAll('.script-page');
-            let scriptText = "TITLE: POSTMARTOM\n\n";
+            let scriptText = `TITLE: ${realName.toUpperCase()}\n\n`;
 
             pages.forEach((page, index) => {
                 const paragraphs = page.querySelectorAll('p');
@@ -758,31 +680,17 @@
                 });
                 scriptText += `\n================ Page ${index + 1} ================\n\n`;
             });
-
             downloadFile(scriptText, `${filename}.txt`, 'text/plain');
         }
 
-        function saveAsHTML(filename) {
+        function saveAsHTML(filename, realName) {
             const css = document.querySelector('style').innerText;
             let pagesHTML = "";
             document.querySelectorAll('.script-page').forEach(page => {
-                pagesHTML += `<div class="script-page">${page.innerHTML}</div>`;
+                pagesHTML += `<div class="script-page" data-page="${page.getAttribute('data-page')}" data-watermark="${page.getAttribute('data-watermark')}">${page.innerHTML}</div>`;
             });
 
-            const htmlContent = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>${filename}</title>
-                    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-                    <style>
-                        body { background: #333; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 40px;}
-                        ${css}
-                    </style>
-                </head>
-                <body>${pagesHTML}</body>
-                </html>
-            `;
+            const htmlContent = `<!DOCTYPE html><html><head><title>${realName}</title><link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"><style>body { background: #333; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 40px;} ${css}</style></head><body>${pagesHTML}</body></html>`;
             downloadFile(htmlContent, `${filename}.html`, 'text/html');
         }
 
@@ -803,9 +711,7 @@
                 jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
 
-            html2pdf().set(opt).from(element).save().then(() => {
-                showSuccessMessage(format);
-            });
+            html2pdf().set(opt).from(element).save().then(() => { showSuccessMessage(format); });
         }
 
         function downloadFile(content, fileName, mimeType) {
