@@ -13,24 +13,11 @@
            Global Variables & Reset
            ========================================= */
         :root {
-            /* General App Colors */
-            --bg-deep: #0a0a0c;
-            --bg-card: rgba(25, 25, 30, 0.7);
-            --black-dark: #0f0f0f;      
-            --black-light: #1a1a1a;     
-            --grey-main: #202024;       
-            --grey-text: #a0a0a0;       
-            --red-accent: #e50914;      
-            --red-hover: #b20710;
-            --white: #ffffff;
-            --border-color: rgba(255, 255, 255, 0.1);
-            
-            /* Editor Specific Colors */
-            --grey-editor: #333333;       
-            --green-save: #28a745;     
-            
-            /* Typography */
-            --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --bg-deep: #0a0a0c; --bg-card: rgba(25, 25, 30, 0.7); --black-dark: #0f0f0f;      
+            --black-light: #1a1a1a; --grey-main: #202024; --grey-text: #a0a0a0;       
+            --red-accent: #e50914; --red-hover: #b20710; --white: #ffffff;
+            --border-color: rgba(255, 255, 255, 0.1); --grey-editor: #333333;       
+            --green-save: #28a745; --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             --font-script: 'Courier Prime', Courier, monospace;
         }
 
@@ -107,11 +94,17 @@
         .nav-item { padding: 15px 24px; cursor: pointer; color: var(--grey-text); font-size: 0.95rem; transition: all 0.2s; }
         .nav-item:hover { color: var(--white); background-color: rgba(255, 255, 255, 0.05); }
         .nav-item.active { color: var(--white); border-left: 4px solid var(--red-accent); background-color: var(--black-light); font-weight: 500; }
-        .nav-bottom { margin-top: auto; }
-        .content { flex: 1; padding: 40px; overflow-y: auto; background-color: transparent; }
         
+        .content { flex: 1; padding: 40px; overflow-y: auto; background-color: transparent; }
         .projects-grid { display: flex; flex-direction: column; gap: 15px; }
-        .project-card { background-color: var(--black-light); border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: transform 0.2s, box-shadow 0.2s, border 0.2s; cursor: pointer; border: 1px solid transparent; animation: fadeInRight 0.5s ease forwards; }
+        
+        /* Updated Project Card */
+        .project-card { 
+            background-color: var(--black-light); border-radius: 12px; padding: 20px; 
+            display: flex; align-items: center; gap: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); 
+            transition: transform 0.2s, box-shadow 0.2s, border 0.2s; cursor: pointer; border: 1px solid transparent; 
+            animation: fadeInRight 0.5s ease forwards; position: relative;
+        }
         @keyframes fadeInRight { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
         .project-card:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.4); border-color: var(--red-accent); }
         .project-drag-icon { color: var(--grey-text); font-size: 1.2rem; cursor: grab; }
@@ -120,14 +113,22 @@
         .project-type { font-size: 0.75rem; color: var(--grey-text); text-transform: uppercase; letter-spacing: 1px; }
         .project-title { font-size: 1.3rem; font-weight: 500; margin: 4px 0; color: var(--white); }
         .project-meta { font-size: 0.85rem; color: var(--grey-text); }
-        .project-owner { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .project-owner .avatar { width: 35px; height: 35px; border-radius: 50%; background-color: var(--grey-main); border: 2px solid var(--red-accent); display: flex; justify-content: center; align-items: center; font-size: 0.8rem; }
-        .project-owner span { font-size: 0.75rem; color: var(--grey-text); }
+        
+        /* Card Actions (Share, Delete, Restore) */
+        .card-actions { display: flex; gap: 10px; opacity: 0; transition: opacity 0.2s; margin-left: auto; }
+        .project-card:hover .card-actions { opacity: 1; }
+        .btn-action { 
+            background: rgba(255,255,255,0.1); border: none; color: white; padding: 8px 16px; 
+            border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: 0.2s; 
+        }
+        .btn-action:hover { background: var(--red-hover); }
+        .btn-action.restore:hover { background: var(--green-save); }
+        .btn-action.share:hover { background: #4285F4; }
 
         .no-projects { text-align: center; padding: 40px; color: var(--grey-text); border: 2px dashed var(--border-color); border-radius: 12px; }
 
         /* =========================================
-           3. MODAL STYLES (Light Theme)
+           3. MODAL STYLES
            ========================================= */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
         .google-modal { background: white; width: 400px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; font-family: 'Roboto', Arial, sans-serif; color: #202124; animation: fadeIn 0.2s ease-out; }
@@ -165,23 +166,18 @@
         
         .editor-canvas { flex: 1; background-color: var(--grey-editor); overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; gap: 40px; }
         
-        /* Individual Page Styles */
         .script-page {
             background-color: var(--white); color: #000; width: 8.5in; height: 11in; padding: 1in 1in 1in 1.5in; 
             box-shadow: 0 8px 20px rgba(0,0,0,0.4); font-family: var(--font-script); font-size: 12pt;
             line-height: 1.2; outline: none; overflow: hidden; position: relative; flex-shrink: 0; z-index: 1;
         }
-
         .script-page::before { content: attr(data-page) "."; position: absolute; top: 0.5in; right: 1in; font-family: var(--font-script); font-size: 12pt; color: #666; z-index: 10; }
-        
-        /* Customizable Watermark */
         .script-page::after {
             content: attr(data-watermark); position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%) rotate(-45deg); font-size: 80px; color: rgba(0, 0, 0, 0.07);
             font-family: var(--font-family); font-weight: 900; text-transform: uppercase;
             pointer-events: none; white-space: nowrap; z-index: 0; user-select: none;
         }
-
         .script-page p { position: relative; z-index: 2; margin: 0 0 1em 0; min-height: 1em; white-space: pre-wrap; outline: none; }
         .script-page p:empty::before { content: "\FEFF"; }
         .script-page p.scene { text-transform: uppercase; font-weight: bold; margin-top: 1.5em; }
@@ -249,15 +245,15 @@
                 </div>
                 <button class="btn-create" id="openNewProjectModalBtn">+ NEW PROJECT</button>
                 <ul class="nav-menu">
-                    <li class="nav-item active">Projects</li>
+                    <li class="nav-item active" id="nav-projects" onclick="switchTab('projects')">Projects</li>
                     <li class="nav-item">Templates</li>
                     <li class="nav-item">Settings</li>
-                    <li class="nav-item">Trash</li>
+                    <li class="nav-item" id="nav-trash" onclick="switchTab('trash')">Trash</li>
                 </ul>
             </aside>
 
             <main class="content">
-                <h2 style="margin-bottom: 24px; font-weight: 400;">Recent Projects</h2>
+                <h2 id="mainTitle" style="margin-bottom: 24px; font-weight: 400;">Recent Projects</h2>
                 <div id="recentProjectsList" class="projects-grid"></div>
             </main>
         </div>
@@ -279,7 +275,7 @@
                         </select>
                         <button class="export-btn" onclick="exportScript()">DOWNLOAD</button>
                     </div>
-                    <button class="btn-editor">SHARE</button>
+                    <button class="btn-editor" onclick="shareCurrentProject()">SHARE</button>
                 </div>
             </header>
 
@@ -295,8 +291,7 @@
                 </select>
             </div>
 
-            <div class="editor-canvas" id="pagesContainer">
-                </div>
+            <div class="editor-canvas" id="pagesContainer"></div>
 
             <div class="status-bar">
                 <span id="saveStatus">All changes saved locally.</span>
@@ -346,16 +341,15 @@
         let currentProjectId = null;
         let activeWatermark = "";
         let saveTimeout;
+        let currentTab = 'projects'; // Track active sidebar tab
 
         document.addEventListener("DOMContentLoaded", function() {
-            // UI Toggles
             document.getElementById("togglePasswordBtn").addEventListener("click", function() {
                 const pass = document.getElementById("passwordField");
                 if (pass.type === "password") { pass.type = "text"; this.textContent = "Hide"; } 
                 else { pass.type = "password"; this.textContent = "Show"; }
             });
 
-            // Modals
             document.getElementById("googleBtn").addEventListener("click", () => document.getElementById("googleModalOverlay").style.display = "flex");
             document.getElementById("closeModalBtn").addEventListener("click", () => document.getElementById("googleModalOverlay").style.display = "none");
             
@@ -377,34 +371,68 @@
                 if (e.key === "Enter") { e.preventDefault(); document.getElementById("saveNewProjectBtn").click(); }
             });
 
-            // Login
             document.getElementById("loginForm").addEventListener("submit", function(e) { e.preventDefault(); simulateLogin(); });
             document.execCommand('defaultParagraphSeparator', false, 'p');
 
-            // Render Dashboard on Load
             renderDashboard();
         });
 
         // ----------------------------------------
-        // DATA & DASHBOARD LOGIC
+        // TAB & DASHBOARD LOGIC
         // ----------------------------------------
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update Sidebar UI
+            document.getElementById('nav-projects').classList.remove('active');
+            document.getElementById('nav-trash').classList.remove('active');
+            document.getElementById(`nav-${tab}`).classList.add('active');
+            
+            // Update Title
+            document.getElementById('mainTitle').innerText = tab === 'projects' ? "Recent Projects" : "Trash";
+            
+            renderDashboard();
+        }
+
         function renderDashboard() {
             const list = document.getElementById("recentProjectsList");
             list.innerHTML = "";
 
-            if (savedProjects.length === 0) {
-                list.innerHTML = `<div class="no-projects">No projects yet. Click '+ NEW PROJECT' to start writing.</div>`;
+            // Filter based on active tab
+            let displayProjects = savedProjects.filter(p => currentTab === 'projects' ? !p.isTrashed : p.isTrashed);
+
+            if (displayProjects.length === 0) {
+                const emptyMsg = currentTab === 'projects' ? "No projects yet. Click '+ NEW PROJECT' to start writing." : "Your trash is empty.";
+                list.innerHTML = `<div class="no-projects">${emptyMsg}</div>`;
                 return;
             }
 
-            // Sort by most recent first
-            savedProjects.sort((a, b) => b.lastEditedMs - a.lastEditedMs);
+            displayProjects.sort((a, b) => b.lastEditedMs - a.lastEditedMs);
 
-            savedProjects.forEach(proj => {
+            displayProjects.forEach(proj => {
                 const initial = proj.name.charAt(0).toUpperCase();
                 const card = document.createElement("div");
                 card.className = "project-card";
-                card.onclick = () => openExistingProject(proj.id);
+                
+                // Only allow opening projects if we are in the active 'projects' tab
+                if (currentTab === 'projects') {
+                    card.onclick = () => openExistingProject(proj.id);
+                }
+
+                // Generate Action Buttons based on Tab
+                let actionButtons = "";
+                if (currentTab === 'projects') {
+                    actionButtons = `
+                        <button class="btn-action share" onclick="shareProjectCard(event, '${proj.id}')">Share</button>
+                        <button class="btn-action" onclick="moveToTrash(event, '${proj.id}')">Delete</button>
+                    `;
+                } else {
+                    actionButtons = `
+                        <button class="btn-action restore" onclick="restoreProject(event, '${proj.id}')">Restore</button>
+                        <button class="btn-action" onclick="permanentlyDelete(event, '${proj.id}')">Delete Permanently</button>
+                    `;
+                }
+
                 card.innerHTML = `
                     <div class="project-drag-icon">&#8801;</div>
                     <div class="project-icon" style="background-color: hsl(${Math.random() * 360}, 70%, 30%)">${initial}</div>
@@ -413,15 +441,67 @@
                         <div class="project-title">${proj.name}</div>
                         <div class="project-meta">Last edited: ${proj.lastEditedStr}</div>
                     </div>
-                    <div class="project-owner">
-                        <div class="avatar">O</div>
-                        <span>Owner</span>
+                    <div class="card-actions">
+                        ${actionButtons}
                     </div>
                 `;
                 list.appendChild(card);
             });
         }
 
+        // ----------------------------------------
+        // TRASH & DELETE FUNCTIONS
+        // ----------------------------------------
+        function moveToTrash(e, id) {
+            e.stopPropagation(); // Prevents the card from opening the editor
+            const proj = savedProjects.find(p => p.id === id);
+            if (proj) {
+                proj.isTrashed = true;
+                saveToLocalStorage();
+                renderDashboard();
+            }
+        }
+
+        function restoreProject(e, id) {
+            e.stopPropagation();
+            const proj = savedProjects.find(p => p.id === id);
+            if (proj) {
+                proj.isTrashed = false;
+                saveToLocalStorage();
+                renderDashboard();
+            }
+        }
+
+        function permanentlyDelete(e, id) {
+            e.stopPropagation();
+            if (confirm("Are you sure you want to permanently delete this project? This cannot be undone.")) {
+                savedProjects = savedProjects.filter(p => p.id !== id);
+                saveToLocalStorage();
+                renderDashboard();
+            }
+        }
+
+        // ----------------------------------------
+        // SHARE FUNCTIONS
+        // ----------------------------------------
+        function shareProjectCard(e, id) {
+            e.stopPropagation();
+            const proj = savedProjects.find(p => p.id === id);
+            if (proj) {
+                alert(`Share link generated for "${proj.name}".\n(This would normally copy a secure URL to your clipboard for LinkedIn or email!)`);
+            }
+        }
+
+        function shareCurrentProject() {
+            const proj = savedProjects.find(p => p.id === currentProjectId);
+            if (proj) {
+                alert(`Share link generated for "${proj.name}".\n(This would normally copy a secure URL to your clipboard for LinkedIn or email!)`);
+            }
+        }
+
+        // ----------------------------------------
+        // CORE APP LOGIC (Login, Save, Export)
+        // ----------------------------------------
         function simulateLogin() {
             document.getElementById("googleModalOverlay").style.display = "none";
             document.getElementById("login-view").classList.remove("active");
@@ -441,7 +521,6 @@
             const newId = 'proj_' + Date.now();
             const now = new Date();
             const timeStr = now.toLocaleDateString() + ", " + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
             const defaultHTML = `<div class="script-page" contenteditable="true" spellcheck="false" data-page="1" data-watermark="" id="scriptPage1"><p class="scene"><br></p></div>`;
 
             const newProject = {
@@ -450,18 +529,19 @@
                 lastEditedMs: Date.now(),
                 lastEditedStr: timeStr,
                 pagesHTML: defaultHTML,
-                watermark: ""
+                watermark: "",
+                isTrashed: false // New flag
             };
 
             savedProjects.push(newProject);
             saveToLocalStorage();
-            
-            openExistingProject(newId); // Load the newly created project
+            switchTab('projects'); // Ensure we are on projects tab
+            openExistingProject(newId);
         }
 
         function openExistingProject(id) {
             const proj = savedProjects.find(p => p.id === id);
-            if (!proj) return;
+            if (!proj || proj.isTrashed) return; // Prevent opening trashed projects
 
             currentProjectId = id;
             activeWatermark = proj.watermark || "";
@@ -470,27 +550,22 @@
             const container = document.getElementById('pagesContainer');
             container.innerHTML = proj.pagesHTML;
             
-            // Reattach watermark logic if needed
             const pages = document.querySelectorAll('.script-page');
             document.getElementById('pageCountDisplay').innerText = `Total Pages: ${pages.length}`;
             
             openEditor();
         }
 
-        // Auto-Save Logic
         document.getElementById('pagesContainer').addEventListener('input', () => {
             clearTimeout(saveTimeout);
             document.getElementById('saveStatus').innerText = "Saving... ⏳";
             document.getElementById('saveStatus').style.color = "var(--grey-text)";
             
-            saveTimeout = setTimeout(() => {
-                saveCurrentProjectData();
-            }, 1000); // Save 1 second after user stops typing
+            saveTimeout = setTimeout(() => { saveCurrentProjectData(); }, 1000); 
         });
 
         function saveCurrentProjectData() {
             if (!currentProjectId) return;
-            
             const projIndex = savedProjects.findIndex(p => p.id === currentProjectId);
             if (projIndex > -1) {
                 const now = new Date();
@@ -498,7 +573,6 @@
                 savedProjects[projIndex].watermark = activeWatermark;
                 savedProjects[projIndex].lastEditedMs = Date.now();
                 savedProjects[projIndex].lastEditedStr = now.toLocaleDateString() + ", " + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                
                 saveToLocalStorage();
                 
                 const status = document.getElementById('saveStatus');
@@ -508,18 +582,14 @@
             }
         }
 
-        function saveToLocalStorage() {
-            localStorage.setItem('meticulaProjects', JSON.stringify(savedProjects));
-        }
+        function saveToLocalStorage() { localStorage.setItem('meticulaProjects', JSON.stringify(savedProjects)); }
 
-        // View Transitions
         function openEditor() {
             document.getElementById("dashboard-view").classList.remove("active");
             setTimeout(() => {
                 document.getElementById("editor-view").classList.add("active");
                 const firstP = document.querySelector('.script-page p');
                 if(firstP) {
-                    // Move cursor to end of the content
                     const range = document.createRange();
                     const sel = window.getSelection();
                     range.selectNodeContents(firstP);
@@ -532,17 +602,13 @@
         }
 
         function closeEditor() {
-            saveCurrentProjectData(); // Final save before leaving
-            renderDashboard(); // Refresh dashboard list
+            saveCurrentProjectData(); 
+            renderDashboard(); 
             document.getElementById("editor-view").classList.remove("active");
-            setTimeout(() => {
-                document.getElementById("dashboard-view").classList.add("active");
-            }, 300);
+            setTimeout(() => { document.getElementById("dashboard-view").classList.add("active"); }, 300);
         }
 
-        // ----------------------------------------
-        // EDITOR & WATERMARK LOGIC
-        // ----------------------------------------
+        // Editor Formats & Toolbar Logic
         const pagesContainer = document.getElementById('pagesContainer');
         const formatSelector = document.getElementById('formatSelector');
 
@@ -552,7 +618,7 @@
                 activeWatermark = userInput.trim();
                 const pages = document.querySelectorAll('.script-page');
                 pages.forEach(page => { page.setAttribute('data-watermark', activeWatermark); });
-                saveCurrentProjectData(); // Save watermark change
+                saveCurrentProjectData(); 
             }
         }
 
@@ -574,12 +640,9 @@
         function updateToolbar() {
             const currentP = getCurrentParagraph();
             if (currentP && currentP.className) {
-                if (Array.from(formatSelector.options).some(opt => opt.value === currentP.className)) {
-                    formatSelector.value = currentP.className;
-                }
+                if (Array.from(formatSelector.options).some(opt => opt.value === currentP.className)) { formatSelector.value = currentP.className; }
             } else if (currentP && !currentP.className) {
-                currentP.className = 'action';
-                formatSelector.value = 'action';
+                currentP.className = 'action'; formatSelector.value = 'action';
             }
         }
 
@@ -590,28 +653,22 @@
                 setTimeout(() => {
                     const newP = getCurrentParagraph();
                     if (!newP || newP === currentP) return;
-
-                    // Smart Formatting Sequence
                     if (currentP.className === 'character') newP.className = 'dialogue';
                     else if (currentP.className === 'dialogue') newP.className = 'character';
                     else if (currentP.className === 'scene') newP.className = 'action';
                     else if (currentP.className === 'parenthetical') newP.className = 'dialogue';
                     else newP.className = 'action';
-                    
                     updateToolbar();
                 }, 10);
             }
         });
 
-        // Auto Pagination Logic
         pagesContainer.addEventListener('input', function(e) {
             const activePage = e.target.closest('.script-page');
             if (!activePage) return;
-
             if (activePage.scrollHeight > activePage.clientHeight) {
                 const overflowP = getCurrentParagraph();
                 if (!overflowP) return;
-
                 let nextPage = activePage.nextElementSibling;
                 if (!nextPage) {
                     const currentPageCount = document.querySelectorAll('.script-page').length;
@@ -624,30 +681,23 @@
                     pagesContainer.appendChild(nextPage);
                     document.getElementById('pageCountDisplay').innerText = `Total Pages: ${currentPageCount + 1}`;
                 }
-
                 nextPage.prepend(overflowP);
-                
                 const range = document.createRange();
                 const sel = window.getSelection();
                 range.selectNodeContents(overflowP);
                 range.collapse(false); 
                 sel.removeAllRanges();
                 sel.addRange(range);
-
                 nextPage.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         });
 
-        // ----------------------------------------
-        // EXPORT LOGIC
-        // ----------------------------------------
         function exportScript() {
             const proj = savedProjects.find(p => p.id === currentProjectId);
             if(!proj) return;
             const format = document.getElementById('exportFormat').value;
             const formattedName = proj.name.replace(/\s+/g, '_');
             document.getElementById('saveStatus').innerText = "Processing File... ⏳";
-
             if (format === 'txt') { saveAsTXT(formattedName, proj.name); showSuccessMessage(format); } 
             else if (format === 'html') { saveAsHTML(formattedName, proj.name); showSuccessMessage(format); } 
             else if (format === 'pdf') { saveAsPDF(formattedName, format); }
@@ -663,14 +713,12 @@
         function saveAsTXT(filename, realName) {
             const pages = document.querySelectorAll('.script-page');
             let scriptText = `TITLE: ${realName.toUpperCase()}\n\n`;
-
             pages.forEach((page, index) => {
                 const paragraphs = page.querySelectorAll('p');
                 paragraphs.forEach(p => {
                     const type = p.className;
                     let text = p.innerText.trim();
                     if(!text) return; 
-
                     if (type === 'character') scriptText += `\n          ${text.toUpperCase()}\n`;
                     else if (type === 'dialogue') scriptText += `     ${text}\n`;
                     else if (type === 'parenthetical') scriptText += `        (${text})\n`;
@@ -686,10 +734,7 @@
         function saveAsHTML(filename, realName) {
             const css = document.querySelector('style').innerText;
             let pagesHTML = "";
-            document.querySelectorAll('.script-page').forEach(page => {
-                pagesHTML += `<div class="script-page" data-page="${page.getAttribute('data-page')}" data-watermark="${page.getAttribute('data-watermark')}">${page.innerHTML}</div>`;
-            });
-
+            document.querySelectorAll('.script-page').forEach(page => { pagesHTML += `<div class="script-page" data-page="${page.getAttribute('data-page')}" data-watermark="${page.getAttribute('data-watermark')}">${page.innerHTML}</div>`; });
             const htmlContent = `<!DOCTYPE html><html><head><title>${realName}</title><link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"><style>body { background: #333; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 40px;} ${css}</style></head><body>${pagesHTML}</body></html>`;
             downloadFile(htmlContent, `${filename}.html`, 'text/html');
         }
@@ -698,32 +743,16 @@
             const element = document.createElement('div');
             document.querySelectorAll('.script-page').forEach(page => {
                 const clone = page.cloneNode(true);
-                clone.style.boxShadow = 'none'; 
-                clone.style.margin = '0';
-                element.appendChild(clone);
+                clone.style.boxShadow = 'none'; clone.style.margin = '0'; element.appendChild(clone);
             });
-
-            const opt = {
-                margin:       0,
-                filename:     `${filename}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-            };
-
+            const opt = { margin: 0, filename: `${filename}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
             html2pdf().set(opt).from(element).save().then(() => { showSuccessMessage(format); });
         }
 
         function downloadFile(content, fileName, mimeType) {
-            const blob = new Blob([content], { type: mimeType });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            const blob = new Blob([content], { type: mimeType }); const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = fileName;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
         }
     </script>
 </body>
