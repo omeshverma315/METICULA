@@ -3,36 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meticula - Screenplay Studio</title>
+    <title>Meticula - Screenplay Studio Pro</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <style>
         /* =========================================
-           Global Variables & Reset
+           OMNI-THEME SYSTEM & VARIABLES
            ========================================= */
         :root {
-            --bg-deep: #0a0a0c; --bg-card: rgba(25, 25, 30, 0.7); --black-dark: #0f0f0f;      
-            --black-light: #1a1a1a; --grey-main: #202024; --grey-text: #a0a0a0;       
-            --red-accent: #e50914; --red-hover: #b20710; --white: #ffffff;
-            --border-color: rgba(255, 255, 255, 0.1); --grey-editor: #333333;       
-            --green-save: #28a745; --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            --font-script: 'Courier Prime', Courier, monospace;
+            --bg-deep: #0a0a0c; --bg-card: rgba(36, 36, 127, 0.7); --black-dark: #0f0f0f;      
+            --black-light: #1a1a1a; --grey-main: #202024; --grey-text: #a0a0a0;        
+            --accent: #e50914; --accent-hover: #b20710; --white: #ffffff;
+            --border-color: rgba(255, 255, 255, 0.1); --grey-editor: #333333;        
+            --green-save: #28a745; 
+            --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --font-script: 'Courier Prime', Courier, 'Nirmala UI', 'Mangal', 'Latha', 'Gautami', 'Kartika', 'Shruti', 'Tunga', monospace;
+        }
+
+        [data-theme="white"] {
+            --bg-deep: #f4f7f6; --bg-card: #ffffff; --black-dark: #ffffff;
+            --black-light: #fdfdfd; --grey-main: #f0f0f0; --grey-text: #5f6368;
+            --accent: #1a73e8; --accent-hover: #1557b0; --white: #202124;
+            --border-color: #dadce0; --grey-editor: #e8eaed;
+        }
+
+        [data-theme="blue"] {
+            --bg-deep: #010b1a; --bg-card: #02162b; --black-dark: #02162b;
+            --black-light: #03213d; --grey-main: #042a4d; --grey-text: #8fb3d9;
+            --accent: #00d2ff; --accent-hover: #0099cc; --white: #e6f1ff;
+            --border-color: rgba(0, 210, 255, 0.2); --grey-editor: #051c33;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: var(--font-family); background-color: var(--bg-deep); color: var(--white);
-            height: 100vh; overflow: hidden;
-            background-image: radial-gradient(circle at top right, #2a080a 0%, transparent 40%),
-                              radial-gradient(circle at bottom left, #121216 0%, transparent 40%);
+            height: 100vh; overflow: hidden; transition: background-color 0.3s, color 0.3s;
+            background-image: radial-gradient(circle at top right, rgba(229, 9, 20, 0.05) 0%, transparent 40%),
+                              radial-gradient(circle at bottom left, rgba(255, 255, 255, 0.02) 0%, transparent 40%);
         }
+        [data-theme="white"] body { background-image: none; }
 
         .app-view {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0; visibility: hidden; transition: opacity 0.5s ease, visibility 0.5s;
+            opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s;
             display: flex; flex-direction: column;
         }
         .app-view.active { opacity: 1; visibility: visible; }
@@ -48,188 +64,229 @@
             transform: translateY(20px); animation: slideUp 0.6s ease forwards;
         }
         @keyframes slideUp { to { transform: translateY(0); } }
-        .logo { font-size: 3rem; font-weight: 900; text-transform: uppercase; letter-spacing: -1px; margin-bottom: 0.5rem; background: linear-gradient(to right, #fff, #a0a0a0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo { font-size: 3rem; font-weight: 900; text-transform: uppercase; letter-spacing: -1px; margin-bottom: 0.5rem; background: linear-gradient(to right, var(--white), var(--grey-text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .login-container h2 { font-size: 1.1rem; font-weight: 400; margin-bottom: 2rem; color: var(--grey-text); }
         .input-group { position: relative; margin-bottom: 1rem; }
-        .input-group input, .modal-input {
-            width: 100%; padding: 1rem 1.2rem; background-color: rgba(0,0,0,0.3); border: 1px solid var(--border-color);
-            border-radius: 8px; color: white; font-size: 1rem; outline: none; transition: all 0.3s;
+        .input-group input, .modal-input, .settings-select {
+            width: 100%; padding: 1rem 1.2rem; background-color: rgba(0,0,0,0.1); border: 1px solid var(--border-color);
+            border-radius: 8px; color: var(--white); font-size: 1rem; outline: none; transition: all 0.3s;
         }
-        .modal-input { background-color: white; color: #202124; border: 1px solid #dadce0; margin-bottom: 20px;}
-        .modal-input:focus { border-color: #1a73e8; }
-        .input-group input:focus { border-color: var(--red-accent); box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.2); }
+        .modal-input { background-color: var(--bg-deep); margin-bottom: 20px;}
+        .input-group input:focus, .modal-input:focus, .settings-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.1); }
         .toggle-password { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--grey-text); cursor: pointer; }
-        .checkbox-group { display: flex; align-items: center; margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--grey-text); }
-        .checkbox-group input { margin-right: 0.5rem; accent-color: var(--red-accent); }
-        .btn-primary { width: 100%; padding: 1rem; background-color: var(--red-accent); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.3s, transform 0.1s; }
-        .btn-primary:hover { background-color: var(--red-hover); }
+        .checkbox-group { display: flex; align-items: center; margin-bottom: 1rem; font-size: 0.9rem; color: var(--grey-text); }
+        .checkbox-group input { margin-right: 0.5rem; accent-color: var(--accent); }
+        
+        .btn-primary { width: 100%; padding: 1rem; background-color: var(--accent); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.3s, transform 0.1s; }
+        .btn-primary:hover { background-color: var(--accent-hover); }
         .btn-primary:active { transform: scale(0.98); }
-        .divider { margin: 1.5rem 0; color: var(--grey-text); font-size: 0.85rem; display: flex; align-items: center; }
-        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border-color); margin: 0 10px; }
-        .btn-social { width: 100%; padding: 0.8rem; background-color: transparent; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; color: var(--white); display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; margin-bottom: 1rem; transition: background 0.3s; }
-        .btn-social:hover { background-color: rgba(255,255,255,0.05); }
-        .help-links { margin-top: 1.5rem; font-size: 0.85rem; }
-        .help-links a { color: var(--grey-text); text-decoration: none; margin: 0 0.5rem; transition: color 0.2s;}
-        .help-links a:hover { color: var(--white); }
+        .btn-danger { background-color: #dc3545; }
+        .btn-danger:hover { background-color: #c82333; }
+        .btn-secondary { background-color: #555; }
+        .btn-secondary:hover { background-color: #444; }
 
         /* =========================================
            2. DASHBOARD VIEW STYLES
            ========================================= */
-        .topbar { height: 65px; background-color: var(--black-dark); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 24px; z-index: 10; }
-        .topbar-left { font-weight: 700; font-size: 1.2rem; letter-spacing: 1px; }
+        .topbar { height: 65px; background-color: var(--black-dark); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 24px; z-index: 10; transition: 0.3s; }
+        .topbar-left { font-weight: 900; font-size: 1.2rem; letter-spacing: 1px; display: flex; align-items: center; }
         .topbar-right { display: flex; align-items: center; gap: 24px; }
         .btn-outline { background: transparent; border: 1px solid var(--grey-text); color: var(--white); padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
         .btn-outline:hover { border-color: var(--white); }
-        .user-profile { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.9rem; }
-        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background-color: var(--red-accent); display: flex; justify-content: center; align-items: center; font-weight: bold; }
+        .user-profile { display: flex; align-items: center; gap: 10px; cursor: default; font-size: 0.9rem; }
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background-color: var(--accent); color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; text-transform: uppercase; }
+        
         .main-layout { display: flex; flex: 1; height: calc(100vh - 65px); }
-        .sidebar { width: 260px; background-color: var(--black-dark); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 30px 0; }
+        .sidebar { width: 260px; background-color: var(--black-dark); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 30px 0; transition: 0.3s; }
         .studio-header { display: flex; align-items: center; gap: 15px; padding: 0 24px; margin-bottom: 40px; }
-        .studio-icon { width: 45px; height: 45px; background-color: var(--red-accent); border-radius: 12px; }
+        .studio-icon { width: 45px; height: 45px; background-color: var(--accent); border-radius: 12px; }
         .studio-info h2 { font-size: 1.2rem; font-weight: 500; }
         .studio-info p { font-size: 0.75rem; color: var(--grey-text); text-transform: uppercase; margin-top: 4px; }
-        .btn-create { margin: 0 24px 30px 24px; background-color: var(--red-accent); color: var(--white); border: none; padding: 12px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.2s; text-align: center; }
-        .btn-create:hover { background-color: var(--red-hover); }
+        
+        .btn-create { margin: 0 24px 30px 24px; background-color: var(--accent); color: white; border: none; padding: 12px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.2s; text-align: center; }
+        .btn-create:hover { background-color: var(--accent-hover); }
+        
         .nav-menu { list-style: none; display: flex; flex-direction: column; }
-        .nav-item { padding: 15px 24px; cursor: pointer; color: var(--grey-text); font-size: 0.95rem; transition: all 0.2s; }
-        .nav-item:hover { color: var(--white); background-color: rgba(255, 255, 255, 0.05); }
-        .nav-item.active { color: var(--white); border-left: 4px solid var(--red-accent); background-color: var(--black-light); font-weight: 500; }
+        .nav-item { padding: 15px 24px; cursor: pointer; color: var(--grey-text); font-size: 0.95rem; transition: all 0.2s; border-left: 4px solid transparent; }
+        .nav-item:hover { color: var(--white); background-color: rgba(128, 128, 128, 0.05); }
+        .nav-item.active { color: var(--accent); border-left-color: var(--accent); background-color: rgba(128, 128, 128, 0.08); font-weight: 500; }
         
         .content { flex: 1; padding: 40px; overflow-y: auto; background-color: transparent; }
+        .tab-section { display: none; animation: fadeInRight 0.4s ease forwards; }
+        .tab-section.active { display: block; }
         .projects-grid { display: flex; flex-direction: column; gap: 15px; }
         
-        /* Updated Project Card */
-        .project-card { 
+        .project-card, .settings-card { 
             background-color: var(--black-light); border-radius: 12px; padding: 20px; 
-            display: flex; align-items: center; gap: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); 
-            transition: transform 0.2s, box-shadow 0.2s, border 0.2s; cursor: pointer; border: 1px solid transparent; 
+            display: flex; align-items: center; gap: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+            transition: transform 0.2s, box-shadow 0.2s, border 0.2s; border: 1px solid var(--border-color); 
             animation: fadeInRight 0.5s ease forwards; position: relative;
         }
-        @keyframes fadeInRight { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
-        .project-card:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.4); border-color: var(--red-accent); }
+        .project-card.clickable:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-color: var(--accent); cursor: pointer; }
+        
         .project-drag-icon { color: var(--grey-text); font-size: 1.2rem; cursor: grab; }
-        .project-icon { width: 50px; height: 50px; background-color: #6a1b9a; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.5rem; color: white;}
+        .project-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.5rem; color: white;}
         .project-details { flex: 1; }
         .project-type { font-size: 0.75rem; color: var(--grey-text); text-transform: uppercase; letter-spacing: 1px; }
         .project-title { font-size: 1.3rem; font-weight: 500; margin: 4px 0; color: var(--white); }
         .project-meta { font-size: 0.85rem; color: var(--grey-text); }
         
-        /* Card Actions (Share, Delete, Restore) */
         .card-actions { display: flex; gap: 10px; opacity: 0; transition: opacity 0.2s; margin-left: auto; }
         .project-card:hover .card-actions { opacity: 1; }
-        .btn-action { 
-            background: rgba(255,255,255,0.1); border: none; color: white; padding: 8px 16px; 
-            border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: 0.2s; 
-        }
-        .btn-action:hover { background: var(--red-hover); }
+        .btn-action { background: rgba(128,128,128,0.2); border: none; color: var(--white); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: 0.2s; }
+        .btn-action:hover { background: var(--accent-hover); color: white;}
         .btn-action.restore:hover { background: var(--green-save); }
-        .btn-action.share:hover { background: #4285F4; }
-
+        .btn-action.share:hover { background: #1a73e8; color: white; }
+        
         .no-projects { text-align: center; padding: 40px; color: var(--grey-text); border: 2px dashed var(--border-color); border-radius: 12px; }
+
+        /* Settings UI */
+        .settings-card { flex-direction: column; align-items: stretch; gap: 10px; margin-bottom: 20px;}
+        .s-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border-color); }
+        .s-row:last-child { border-bottom: none; }
+        .settings-select { width: auto; padding: 8px 12px; background-color: var(--bg-deep); }
+        .settings-select option { background-color: var(--black-dark); color: var(--white); }
 
         /* =========================================
            3. MODAL STYLES
            ========================================= */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
-        .google-modal { background: white; width: 400px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; font-family: 'Roboto', Arial, sans-serif; color: #202124; animation: fadeIn 0.2s ease-out; }
+        .custom-modal { background: var(--bg-card); border: 1px solid var(--border-color); width: 400px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; animation: fadeIn 0.2s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: #f1f3f4; border-bottom: 1px solid #dadce0; font-size: 0.85rem; color: #5f6368; }
-        .modal-header-actions span { margin-left: 12px; cursor: pointer; font-size: 1.2rem; }
-        .modal-header-actions span:hover { color: black; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--black-dark); border-bottom: 1px solid var(--border-color); font-size: 1rem; font-weight: 500;}
+        .modal-header-actions span { margin-left: 12px; cursor: pointer; font-size: 1.2rem; color: var(--grey-text);}
+        .modal-header-actions span:hover { color: var(--white); }
         .modal-body { padding: 24px 32px; text-align: left; }
-        .modal-title { font-size: 1.5rem; font-weight: 400; margin-bottom: 8px; }
-        .modal-subtitle { font-size: 1rem; margin-bottom: 24px; }
-        .account-list { list-style: none; border-top: 1px solid #dadce0; margin-bottom: 24px; }
-        .account-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #dadce0; cursor: pointer; transition: background 0.2s; }
-        .account-item:hover { background-color: #f8f9fa; }
-        .modal-avatar { width: 32px; height: 32px; border-radius: 50%; background: #1a73e8; color: white; display: flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; margin-right: 12px; }
-        .account-info { flex-grow: 1; }
-        .account-name { font-size: 0.95rem; font-weight: 500; color: #3c4043; }
-        .account-email { font-size: 0.85rem; color: #5f6368; }
 
         /* =========================================
-           4. EDITOR VIEW STYLES
+           4. EDITOR VIEW STYLES & WATERMARK
            ========================================= */
         .editor-layout { display: flex; flex-direction: column; height: 100vh; width: 100%; background-color: var(--bg-deep); }
-        .btn-editor { padding: 8px 16px; background-color: var(--red-accent); color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-editor:hover { opacity: 0.8; transform: scale(0.98); }
-        .back-btn { background: none; border: none; color: var(--grey-text); cursor: pointer; font-size: 1rem; }
+        .btn-editor { padding: 8px 16px; background-color: var(--accent); color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-editor:hover { background-color: var(--accent-hover); transform: scale(0.98); }
+        .back-btn { background: none; border: none; color: var(--grey-text); cursor: pointer; font-size: 1rem; font-weight: bold; }
         .back-btn:hover { color: var(--white); }
-        .export-group { display: flex; align-items: center; background: #111; border: 1px solid var(--green-save); border-radius: 4px; overflow: hidden;}
-        .export-select { background: #111; color: white; border: none; padding: 8px 12px; outline: none; cursor: pointer; font-family: var(--font-family); font-weight: 500;}
+        
+        .export-group { display: flex; align-items: center; background: rgba(0,0,0,0.2); border: 1px solid var(--green-save); border-radius: 4px; overflow: hidden;}
+        
+        .export-select { background: transparent; color: var(--white); border: none; padding: 8px 12px; outline: none; cursor: pointer; font-family: var(--font-family); font-weight: 500;}
+        .export-select option { background-color: #1a1a1a; color: white; }
+        
         .export-btn { background: var(--green-save); color: white; border: none; padding: 8px 16px; font-weight: bold; cursor: pointer; transition: 0.2s;}
         .export-btn:hover { background: #218838; }
-        .editor-header { height: 60px; background: var(--black-dark); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0;}
+        
+        .editor-header { height: 60px; background: var(--black-dark); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; transition: 0.3s;}
         .header-actions { display: flex; gap: 15px; align-items: center; }
-        .editor-toolbar { height: 50px; background: var(--black-light); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 20px; gap: 15px; flex-shrink: 0;}
-        .format-select { background: #111; color: white; border: 1px solid var(--grey-text); padding: 8px 12px; border-radius: 4px; outline: none; cursor: pointer; font-family: var(--font-family); }
+        .editor-toolbar { height: 50px; background: var(--black-light); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 20px; gap: 15px; flex-shrink: 0; transition: 0.3s;}
+        .format-select { background: var(--bg-deep); color: var(--white); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 4px; outline: none; cursor: pointer; font-family: var(--font-family); }
+        .format-select option { background-color: #1a1a1a; color: white; }
         
-        .editor-canvas { flex: 1; background-color: var(--grey-editor); overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; gap: 40px; }
+        .editor-canvas { flex: 1; background-color: var(--grey-editor); overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; gap: 40px; transition: 0.3s;}
         
+        /* Explicit Page Colors with Black Ink */
         .script-page {
-            background-color: var(--white); color: #000; width: 8.5in; height: 11in; padding: 1in 1in 1in 1.5in; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4); font-family: var(--font-script); font-size: 12pt;
+            width: 8.5in; height: 11in; padding: 1in 1in 1in 1.5in; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3); font-family: var(--font-script); font-size: 12pt;
             line-height: 1.2; outline: none; overflow: hidden; position: relative; flex-shrink: 0; z-index: 1;
         }
-        .script-page::before { content: attr(data-page) "."; position: absolute; top: 0.5in; right: 1in; font-family: var(--font-script); font-size: 12pt; color: #666; z-index: 10; }
-        .script-page::after {
-            content: attr(data-watermark); position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%) rotate(-45deg); font-size: 80px; color: rgba(0, 0, 0, 0.07);
-            font-family: var(--font-family); font-weight: 900; text-transform: uppercase;
-            pointer-events: none; white-space: nowrap; z-index: 0; user-select: none;
+        .page-white { background-color: white; color: black; }
+        .page-red { background-color: #ffcccc; color: black; }
+        
+        .script-page::before { content: attr(data-page) "."; position: absolute; top: 0.5in; right: 1in; font-family: var(--font-script); font-size: 12pt; color: inherit; opacity: 0.6; z-index: 10; }
+        
+        .watermark-overlay {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 80px; color: #000; opacity: 0.12; font-family: 'Segoe UI', sans-serif; 
+            font-weight: 900; text-transform: uppercase; pointer-events: none; white-space: nowrap; 
+            z-index: 0; user-select: none;
         }
+
         .script-page p { position: relative; z-index: 2; margin: 0 0 1em 0; min-height: 1em; white-space: pre-wrap; outline: none; }
         .script-page p:empty::before { content: "\FEFF"; }
         .script-page p.scene { text-transform: uppercase; font-weight: bold; margin-top: 1.5em; }
         .script-page p.action { text-transform: none; }
-        .script-page p.character { text-transform: uppercase; margin-left: 2.2in; margin-bottom: 0; }
+        .script-page p.character { text-transform: uppercase; margin-left: 2.2in; margin-bottom: 0; width: 50%; }
         .script-page p.dialogue { margin-left: 1in; margin-right: 1.5in; margin-top: 0; }
         .script-page p.parenthetical { margin-left: 1.5in; margin-top: 0; margin-bottom: 0; }
         .script-page p.transition { text-align: right; text-transform: uppercase; margin-top: 1em; }
+        
         .status-bar { height: 35px; background: var(--black-dark); border-top: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; color: var(--grey-text); font-size: 0.85rem; flex-shrink: 0;}
+
+        #pagesContainer.show-scene-numbers { counter-reset: scene; }
+        #pagesContainer.show-scene-numbers .script-page p.scene { counter-increment: scene; position: relative; text-decoration: underline; }
+        #pagesContainer.show-scene-numbers .script-page p.scene::before {
+            content: counter(scene) "."; position: absolute; left: -0.6in;
+            color: #e50914; font-weight: bold; font-family: var(--font-family); font-size: 11pt; user-select: none; text-decoration: none;
+        }
+
+        /* =========================================
+           5. SHOT DIVISION UI STYLES
+           ========================================= */
+        #shot-division-view { background: var(--bg-deep); }
+        .shot-canvas { flex: 1; background-color: var(--grey-editor); overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; gap: 40px; }
+        .shot-canvas .script-page { height: auto !important; min-height: 11in; padding-bottom: 1.5in; }
+        .shot-canvas p { position: relative; padding: 4px 0; border: 1px solid transparent; border-radius: 4px; transition: background 0.2s; }
+        .shot-canvas p:hover { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.1); }
+        
+        .btn-add-shot { position: absolute; right: -1.2in; top: 0; background: var(--accent); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; opacity: 0; transition: 0.2s; font-weight: bold; font-family: var(--font-family); z-index: 10;}
+        .shot-canvas p:hover .btn-add-shot { opacity: 1; }
+        
+        .shot-card { background: #fdfdfd; border: 1px solid #ccc; padding: 15px; border-radius: 8px; display: flex; gap: 15px; align-items: flex-start; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-left: 4px solid var(--accent); margin-top: 10px; margin-bottom: 20px; margin-left: 0.5in; width: calc(100% - 1in); font-family: var(--font-family); font-size: 11pt;}
+        .shot-card img { max-width: 150px; max-height: 100px; object-fit: cover; border-radius: 4px; background: #eee; }
+        .shot-info { flex: 1; }
+        .shot-angle { display: inline-block; background: rgba(229,9,20,0.1); color: var(--accent); padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; margin-bottom: 6px; }
+        .shot-desc { color: #333; line-height: 1.4; }
+        .shot-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+        .btn-small { background: transparent; border: 1px solid #aaa; color: #555; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; transition: 0.2s; font-weight: bold;}
+        .btn-small:hover { background: #f0f0f0; color: #000; border-color: #555; }
+        .btn-small.danger:hover { background: #ffebeb; color: #dc3545; border-color: #dc3545; }
+
+        .drop-zone { border: 2px dashed var(--border-color); border-radius: 8px; padding: 30px; text-align: center; cursor: pointer; color: var(--grey-text); background: rgba(0,0,0,0.2); transition: 0.3s; }
+        .drop-zone:hover { border-color: var(--accent); color: var(--white); }
 
         @media print {
             .script-page { box-shadow: none; margin: 0; border: none; }
-            .app-view:not(#editor-view) { display: none !important; }
+            .app-view:not(.active) { display: none !important; }
         }
     </style>
 </head>
 <body>
 
+    <!-- 1. LOGIN VIEW -->
     <div id="login-view" class="app-view active">
         <div class="login-container">
             <h1 class="logo">METICULA</h1>
-            <h2>Log in to your studio</h2>
+            <h2 data-i18n="subtitle">Professional Screenplay Studio</h2>
             <form id="loginForm">
                 <div class="input-group">
-                    <input type="email" placeholder="Email Address" required>
+                    <input type="email" id="emailField" placeholder="Email Address" data-i18n-ph="email" required>
                 </div>
                 <div class="input-group">
-                    <input type="password" id="passwordField" placeholder="Password" required>
+                    <input type="password" id="passwordField" placeholder="Password" data-i18n-ph="password" required>
                     <button type="button" class="toggle-password" id="togglePasswordBtn">Show</button>
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" id="keepLoggedIn" checked>
-                    <label for="keepLoggedIn">Keep me logged in 4 days</label>
+                    <p style="text-align: left; margin-top: -5px;" data-i18n="loginHint">*If new, a profile will be created automatically.</p>
                 </div>
-                <button type="submit" class="btn-primary">ENTER STUDIO</button>
+                
+                <a href="#" onclick="forgotPassword()" data-i18n="forgotPass" style="color:var(--grey-text); font-size:0.85rem; display:block; margin-bottom:1.5rem; text-decoration:none; text-align:left;">Forgot Password?</a>
+                
+                <button type="submit" class="btn-primary" data-i18n="loginBtn">SECURE LOGIN</button>
             </form>
-            <div class="divider">or</div>
-            <button type="button" class="btn-social" id="googleBtn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                Continue with Google
-            </button>
         </div>
     </div>
 
+    <!-- 2. DASHBOARD VIEW -->
     <div id="dashboard-view" class="app-view">
         <header class="topbar">
-            <div class="topbar-left">METICULA STUDIO</div>
+            <div class="topbar-left">
+                METICULA <span id="nav-indicator" style="font-weight: 300; color: var(--grey-text); font-size: 0.9rem; margin-left: 10px;" data-i18n="navProj">/ PROJECTS</span>
+            </div>
             <div class="topbar-right">
                 <button class="btn-outline">UPGRADE PRO</button>
-                <div class="user-profile" onclick="logout()">
-                    <div class="user-avatar">O</div>
-                    <span>OK Verma</span>
+                <div class="user-profile">
+                    <div class="user-avatar" id="avatarIcon">U</div>
+                    <span id="displayUserName">User Name</span>
                 </div>
             </div>
         </header>
@@ -239,30 +296,123 @@
                 <div class="studio-header">
                     <div class="studio-icon"></div>
                     <div class="studio-info">
-                        <h2>My Studio</h2>
-                        <p>Basic Scriptwriting</p>
+                        <h2 data-i18n="myStudio">My Studio</h2>
+                        <p data-i18n="studioSub">Basic Scriptwriting</p>
                     </div>
                 </div>
-                <button class="btn-create" id="openNewProjectModalBtn">+ NEW PROJECT</button>
+                <button class="btn-create" id="openNewProjectModalBtn" data-i18n="newProjBtn">+ NEW PROJECT</button>
                 <ul class="nav-menu">
-                    <li class="nav-item active" id="nav-projects" onclick="switchTab('projects')">Projects</li>
-                    <li class="nav-item">Templates</li>
-                    <li class="nav-item">Settings</li>
-                    <li class="nav-item" id="nav-trash" onclick="switchTab('trash')">Trash</li>
+                    <li class="nav-item active" id="nav-projects" onclick="switchTab('projects')" data-i18n="tabProj">Projects</li>
+                    <li class="nav-item" id="nav-shots" onclick="switchTab('shots')" data-i18n="tabShot">Shot Division</li>
+                    <li class="nav-item" id="nav-settings" onclick="switchTab('settings')" data-i18n="tabSet">Settings</li>
+                    <li class="nav-item" id="nav-trash" onclick="switchTab('trash')" data-i18n="tabTrash">Trash</li>
                 </ul>
             </aside>
 
             <main class="content">
-                <h2 id="mainTitle" style="margin-bottom: 24px; font-weight: 400;">Recent Projects</h2>
-                <div id="recentProjectsList" class="projects-grid"></div>
+                <!-- Tab: Projects -->
+                <div id="tab-projects" class="tab-section active">
+                    <h2 style="margin-bottom: 24px; font-weight: 400;" data-i18n="recProj">Recent Projects</h2>
+                    <div id="recentProjectsList" class="projects-grid"></div>
+                </div>
+
+                <!-- Tab: Shot Division -->
+                <div id="tab-shots" class="tab-section">
+                    <h2 style="margin-bottom: 24px; font-weight: 400;" data-i18n="selShotProj">Select Project for Shot Division</h2>
+                    <div id="shotProjectsList" class="projects-grid"></div>
+                </div>
+
+                <!-- Tab: Settings -->
+                <div id="tab-settings" class="tab-section">
+                    <h2 style="margin-bottom: 24px; font-weight: 400;" data-i18n="tabSet">Studio Settings</h2>
+                    
+                    <div class="settings-card">
+                        <h3 style="margin-bottom: 10px; font-weight: 500;">Profile Information</h3>
+                        
+                        <div class="s-row">
+                            <div>
+                                <span style="color:var(--grey-text); font-size: 0.9rem;">Current Username: </span><br>
+                                <strong id="settingsCurrentUsername" style="color:var(--white); font-size: 1.1rem; display:inline-block; margin-top:4px;"></strong>
+                            </div>
+                            <div style="display:flex; gap:10px; align-items:center;">
+                                <input type="text" id="setUserName" class="settings-select" placeholder="New unique username" style="width: 200px; padding: 8px 12px;">
+                                <button class="btn-primary" style="width: auto; padding: 8px 16px;" onclick="updateProfile()">Change</button>
+                            </div>
+                        </div>
+
+                        <div class="s-row">
+                            <div>
+                                <span style="color:var(--grey-text); font-size: 0.9rem;">Email Address</span><br>
+                                <input type="email" id="setDisplayEmail" class="settings-select" readonly title="Email cannot be changed here" style="width: 250px; opacity: 0.7; cursor: not-allowed; padding: 8px 12px; margin-top:4px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3 style="margin-bottom: 10px; font-weight: 500;" data-i18n="secPass">Security & Password</h3>
+                        <div class="s-row">
+                            <span data-i18n="oldPass">Old Password</span>
+                            <input type="password" id="oldPass" class="settings-select" placeholder="Current Password" style="width: 250px;">
+                        </div>
+                        <div class="s-row">
+                            <span data-i18n="newPass">New Password</span>
+                            <input type="password" id="newPass" class="settings-select" placeholder="Strong Password" style="width: 250px;">
+                        </div>
+                        <div class="s-row" style="justify-content: flex-end;">
+                            <button class="btn-primary" style="width: auto; padding: 10px 20px;" onclick="changePassword()" data-i18n="chPass">Change Password</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3 style="margin-bottom: 10px; font-weight: 500;">Appearance & Localization</h3>
+                        <div class="s-row">
+                            <span>Interface Theme</span>
+                            <select onchange="setTheme(this.value)" id="themePicker" class="settings-select">
+                                <option value="dark">Meticula Dark</option>
+                                <option value="white">Pristine White</option>
+                                <option value="blue">Midnight Blue</option>
+                            </select>
+                        </div>
+                        <div class="s-row">
+                            <span data-i18n="appLang">App Language</span>
+                            <select id="langPicker" class="settings-select" onchange="changeLanguage()">
+                                <option value="en" selected>English (Default)</option>
+                                <option value="hi">Hindi (हिंदी)</option>
+                                <option value="mr">Marathi (मराठी)</option>
+                                <option value="gu">Gujarati (ગુજરાતી)</option>
+                                <option value="ta">Tamil (தமிழ்)</option>
+                                <option value="te">Telugu (తెలుగు)</option>
+                                <option value="ml">Malayalam (മലയാളം)</option>
+                                <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="s-row" style="border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 10px;">
+                            <span data-i18n="logoutText" style="font-weight: bold; color: var(--white);">Account Session</span>
+                            <button class="btn-primary btn-secondary" style="width: auto; padding: 8px 16px;" onclick="logout()">Secure Logout</button>
+                        </div>
+                        
+                        <div class="s-row">
+                            <span style="color: #dc3545; font-weight: bold;">Danger Zone</span>
+                            <button class="btn-primary btn-danger" style="width: auto; padding: 8px 16px;" onclick="deleteMyAccount()">Delete My Account</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Trash -->
+                <div id="tab-trash" class="tab-section">
+                    <h2 style="margin-bottom: 24px; font-weight: 400;" data-i18n="tabTrash">Trash</h2>
+                    <div id="trashProjectsList" class="projects-grid"></div>
+                </div>
             </main>
         </div>
     </div>
 
+    <!-- 3. EDITOR VIEW -->
     <div id="editor-view" class="app-view">
         <div class="editor-layout">
             <header class="editor-header">
-                <button class="back-btn" onclick="closeEditor()">&#10094; Back to Projects</button>
+                <button class="back-btn" onclick="closeEditor()" data-i18n="backProj">&#10094; Back to Projects</button>
                 <div id="editorTitle" style="font-weight: bold; font-size: 1.1rem;">Untitled Project - Script</div>
                 
                 <div class="header-actions">
@@ -275,7 +425,6 @@
                         </select>
                         <button class="export-btn" onclick="exportScript()">DOWNLOAD</button>
                     </div>
-                    <button class="btn-editor" onclick="shareCurrentProject()">SHARE</button>
                 </div>
             </header>
 
@@ -289,9 +438,21 @@
                     <option value="parenthetical">Parenthetical</option>
                     <option value="transition">Transition</option>
                 </select>
+                
+                <label style="margin-left: 20px; display:flex; align-items:center; gap:8px; cursor:pointer; color: var(--grey-text); font-size: 0.9rem;">
+                    <input type="checkbox" id="sceneNumToggle" checked onchange="toggleSceneNumbers()"> Auto-Number
+                </label>
+
+                <!-- Page Color Selector directly inside Toolbar -->
+                <select id="pageColorToggle" class="format-select" style="margin-left: 15px;" onchange="updatePageColor(this.value)">
+                    <option value="page-white">White Page</option>
+                    <option value="page-red">Red Page</option>
+                </select>
+
+                <span style="margin-left: auto; color: var(--grey-text); font-size: 0.8rem;"><i>Pro tip: Press <b>Tab</b> while typing to cycle formats</i></span>
             </div>
 
-            <div class="editor-canvas" id="pagesContainer"></div>
+            <div class="editor-canvas show-scene-numbers" id="pagesContainer" contenteditable="true" spellcheck="false"></div>
 
             <div class="status-bar">
                 <span id="saveStatus">All changes saved locally.</span>
@@ -300,64 +461,115 @@
         </div>
     </div>
 
-    <div id="googleModalOverlay" class="modal-overlay">
-        <div class="google-modal">
-            <div class="modal-header">
-                <div>Sign in - Google accounts</div>
-                <div class="modal-header-actions"><span id="closeModalBtn" title="Close">&#10005;</span></div>
+    <!-- 4. SHOT DIVISION VIEW -->
+    <div id="shot-division-view" class="app-view">
+        <header class="editor-header">
+            <button class="back-btn" onclick="closeShotDivision()" data-i18n="backProj">&#10094; Back to Projects</button>
+            <div id="shotEditorTitle" style="font-weight: bold; font-size: 1.1rem;">Project - Shot Division</div>
+            <div class="header-actions">
+                <button class="btn-editor" onclick="downloadShotlistPDF()">DOWNLOAD SHOTLIST</button>
             </div>
-            <div class="modal-body">
-                <h3 class="modal-title">Choose an account</h3>
-                <ul class="account-list">
-                    <li class="account-item" onclick="simulateLogin()">
-                        <div class="modal-avatar">O</div>
-                        <div class="account-info">
-                            <div class="account-name">OK Verma</div>
-                            <div class="account-email">omeshverma565@gmail.com</div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
+        </header>
+        <div class="shot-canvas" id="shotCanvas"></div>
     </div>
 
+    <!-- MODALS -->
+    <!-- New Project Modal -->
     <div id="newProjectModalOverlay" class="modal-overlay">
-        <div class="google-modal" style="width: 350px;">
+        <div class="custom-modal" style="width: 350px;">
             <div class="modal-header">
-                <div>Create New Project</div>
+                <div data-i18n="newProjBtn">Create New Project</div>
                 <div class="modal-header-actions"><span id="closeNewProjectBtn" title="Close">&#10005;</span></div>
             </div>
             <div class="modal-body">
-                <h3 class="modal-title" style="font-size: 1.2rem;">Project Name</h3>
+                <label style="color:var(--grey-text); font-size:0.9rem; display:block; margin-bottom:5px;">Project Name</label>
                 <input type="text" id="newProjectName" class="modal-input" placeholder="e.g. My Awesome Screenplay">
                 <button class="btn-primary" id="saveNewProjectBtn" style="border-radius: 4px;">Save & Open</button>
             </div>
         </div>
     </div>
 
+    <!-- Add/Edit Shot Modal -->
+    <div id="shotModalOverlay" class="modal-overlay">
+        <div class="custom-modal" style="width: 450px;">
+            <div class="modal-header">
+                <div>Shot Configuration</div>
+                <div class="modal-header-actions"><span onclick="closeShotModal()" title="Close">&#10005;</span></div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="currentShotPId">
+                
+                <label style="display:block; margin-bottom: 5px; color:var(--grey-text); font-size:0.9rem;">Camera Angle / Type</label>
+                <select id="shotAngle" class="modal-input" style="padding: 10px;">
+                    <option value="Wide Shot (WS)">Wide Shot (WS)</option>
+                    <option value="Medium Shot (MS)">Medium Shot (MS)</option>
+                    <option value="Close Up (CU)">Close Up (CU)</option>
+                    <option value="Over the Shoulder (OTS)">Over the Shoulder (OTS)</option>
+                    <option value="Point of View (POV)">Point of View (POV)</option>
+                    <option value="Tracking Shot">Tracking / Dolly Shot</option>
+                </select>
+
+                <label style="display:block; margin-bottom: 5px; color:var(--grey-text); font-size:0.9rem;">Shot Action / Description</label>
+                <textarea id="shotDesc" class="modal-input" style="height: 100px; resize:none; padding: 10px;" placeholder="Describe subject action and camera movement..."></textarea>
+
+                <label style="display:block; margin-bottom: 5px; color:var(--grey-text); font-size:0.9rem;">Storyboard / Reference Image</label>
+                <div class="drop-zone" onclick="document.getElementById('shotImageUpload').click()">
+                    <span>Click or drop image here</span>
+                    <img id="shotImagePreview" style="display:none; max-width: 100%; max-height:150px; margin-top:10px; border-radius:4px; margin-left:auto; margin-right:auto;">
+                </div>
+                <input type="file" id="shotImageUpload" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
+
+                <button class="btn-primary" id="saveShotBtn" onclick="saveShotDetails()" style="margin-top: 20px;">Attach to Script Line</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Data Management Variables
+        // --- I18N DICTIONARY FOR MULTI-LANGUAGE SYSTEM ---
+        const i18n = {
+            en: { subtitle: "Professional Screenplay Studio", email: "Email Address", password: "Password", loginHint: "*If new, a profile will be created automatically.", forgotPass: "Forgot Password?", loginBtn: "SECURE LOGIN", navProj: "/ PROJECTS", myStudio: "My Studio", studioSub: "Basic Scriptwriting", newProjBtn: "+ NEW PROJECT", tabProj: "Projects", tabShot: "Shot Division", tabSet: "Settings", tabTrash: "Trash", recProj: "Recent Projects", selShotProj: "Select Project for Shot Division", username: "Unique Username", secureSave: "Secure Save", secPass: "Security & Password", oldPass: "Old Password", newPass: "New Password", chPass: "Change Password", appLang: "App Language", backProj: "❮ Back to Projects", share: "Share", del: "Delete", restore: "Restore", delPerm: "Delete Permanently", rename: "Rename", logoutText: "Account Session" },
+            hi: { subtitle: "प्रोफेशनल स्क्रीनप्ले स्टूडियो", email: "ईमेल पता", password: "पासवर्ड", loginHint: "*नया होने पर, प्रोफ़ाइल स्वतः बन जाएगी।", forgotPass: "पासवर्ड भूल गए?", loginBtn: "सुरक्षित लॉगिन", navProj: "/ प्रोजेक्ट्स", myStudio: "मेरा स्टूडियो", studioSub: "मूल पटकथा लेखन", newProjBtn: "+ नया प्रोजेक्ट", tabProj: "प्रोजेक्ट्स", tabShot: "शॉट डिवीजन", tabSet: "सेटिंग्स", tabTrash: "ट्रैश", recProj: "हाल के प्रोजेक्ट", selShotProj: "शॉट डिवीजन के लिए चुनें", username: "अद्वितीय उपयोगकर्ता नाम", secureSave: "सुरक्षित सहेजें", secPass: "सुरक्षा और पासवर्ड", oldPass: "पुराना पासवर्ड", newPass: "नया पासवर्ड", chPass: "पासवर्ड बदलें", appLang: "ऐप की भाषा", backProj: "❮ प्रोजेक्ट्स पर वापस जाएं", share: "शेयर", del: "हटाएं", restore: "रिस्टोर", delPerm: "हमेशा के लिए हटाएं", rename: "नाम बदलें", logoutText: "अकाउंट सेशन" },
+            mr: { subtitle: "व्यावसायिक पटकथा स्टुडिओ", email: "ईमेल पत्ता", password: "पासवर्ड", loginHint: "*नवीन असल्यास, प्रोफाइल स्वयंचलितपणे तयार होईल.", forgotPass: "पासवर्ड विसरलात?", loginBtn: "सुरक्षित लॉगिन", navProj: "/ प्रकल्प", myStudio: "माझा स्टुडिओ", studioSub: "मूलभूत पटकथा लेखन", newProjBtn: "+ नवीन प्रकल्प", tabProj: "प्रकल्प", tabShot: "शॉट विभाग", tabSet: "सेटिंग्ज", tabTrash: "कचरा", recProj: "अलीकडील प्रकल्प", selShotProj: "शॉट विभागासाठी निवडा", username: "अद्वितीय वापरकर्तानाव", secureSave: "सुरक्षित जतन करा", secPass: "सुरक्षा आणि पासवर्ड", oldPass: "जुना पासवर्ड", newPass: "नवीन पासवर्ड", chPass: "पासवर्ड बदला", appLang: "अॅपची भाषा", backProj: "❮ प्रकल्पांवर परत जा", share: "शेअर", del: "हटवा", restore: "रिस्टोअर", delPerm: "कायमचे हटवा", rename: "नाव बदला", logoutText: "खाते सत्र" },
+            gu: { subtitle: "વ્યાવસાયિક સ્ક્રીનપ્લે સ્ટુડિયો", email: "ઇમેઇલ સરનામું", password: "પાસવર્ડ", loginHint: "*જો નવું હોય, તો પ્રોફાઇલ આપમેળે બનશે.", forgotPass: "પાસવર્ડ ભૂલી ગયા?", loginBtn: "સુરક્ષિત લૉગિન", navProj: "/ પ્રોજેક્ટ્સ", myStudio: "મારો સ્ટુડિયો", studioSub: "મૂળભૂત પટકથા લેખન", newProjBtn: "+ નવો પ્રોજેક્ટ", tabProj: "પ્રોજેક્ટ્સ", tabShot: "શૉટ ડિવિઝન", tabSet: "સેટિંગ્સ", tabTrash: "કચરો", recProj: "તાજેતરના પ્રોજેક્ટ", selShotProj: "શૉટ ડિવિઝન માટે પસંદ કરો", username: "અનન્ય વપરાશકર્તા નામ", secureSave: "સુરક્ષિત સાચવો", secPass: "સુરક્ષા અને પાસવર્ડ", oldPass: "જૂનો પાસવર્ડ", newPass: "નવો પાસવર્ડ", chPass: "પાસવર્ડ બદલો", appLang: "એપ્લિકેશન ભાષા", backProj: "❮ પ્રોજેક્ટ્સ પર પાછા જાઓ", share: "શેર", del: "કાઢી નાખો", restore: "પુનઃસ્થાપિત", delPerm: "કાયમ માટે કાઢી નાખો", rename: "નામ બદલો", logoutText: "એકાઉન્ટ સત્ર" },
+            ta: { subtitle: "தொழில்முறை திரைக்கதை ஸ்டுடியோ", email: "மின்னஞ்சல் முகவரி", password: "கடவுச்சொல்", loginHint: "*புதியதாக இருந்தால், சுயவிவரம் உருவாக்கப்படும்.", forgotPass: "கடவுச்சொல்லை மறந்துவிட்டீர்களா?", loginBtn: "உள்நுழைய", navProj: "/ திட்டங்கள்", myStudio: "என் ஸ்டுடியோ", studioSub: "அடிப்படை திரைக்கதை", newProjBtn: "+ புதிய திட்டம்", tabProj: "திட்டங்கள்", tabShot: "ஷாட் பிரிவு", tabSet: "அமைப்புகள்", tabTrash: "குப்பை", recProj: "சமீபத்திய திட்டங்கள்", selShotProj: "திட்டத்தைத் தேர்ந்தெடுக்கவும்", username: "தனிப்பட்ட பயனர்பெயர்", secureSave: "சேமி", secPass: "பாதுகாப்பு & கடவுச்சொல்", oldPass: "பழைய கடவுச்சொல்", newPass: "புதிய கடவுச்சொல்", chPass: "மாற்று", appLang: "பயன்பாட்டு மொழி", backProj: "❮ திட்டங்களுக்குச் செல்", share: "பகிர்", del: "நீக்கு", restore: "மீட்டமை", delPerm: "நிரந்தரமாக நீக்கு", rename: "பெயர் மாற்று", logoutText: "கணக்கு அமர்வு" },
+            te: { subtitle: "ప్రొఫెషనల్ స్క్రీన్‌ప్లే స్టూడియో", email: "ఇమెయిల్ చిరునామా", password: "పాస్‌వర్డ్", loginHint: "*కొత్తదైతే, ప్రొఫైల్ ఆటోమేటిక్‌గా సృష్టించబడుతుంది.", forgotPass: "పాస్‌వర్డ్ మర్చిపోయారా?", loginBtn: "లాగిన్ చేయండి", navProj: "/ ప్రాజెక్టులు", myStudio: "నా స్టూడియో", studioSub: "బేసిక్ స్క్రీన్‌ప్లే", newProjBtn: "+ కొత్త ప్రాజెక్ట్", tabProj: "ప్రాజెక్టులు", tabShot: "షాట్ విభజన", tabSet: "సెట్టింగ్‌లు", tabTrash: "చెత్త", recProj: "ఇటీవలి ప్రాజెక్టులు", selShotProj: "ప్రాజెక్ట్‌ను ఎంచుకోండి", username: "ప్రత్యేక వినియోగదారు పేరు", secureSave: "సేవ్ చేయండి", secPass: "భద్రత & పాస్‌వర్డ్", oldPass: "పాత పాస్‌వర్డ్", newPass: "కొత్త పాస్‌వర్డ్", chPass: "పాస్‌వర్డ్ మార్చండి", appLang: "యాప్ భాష", backProj: "❮ ప్రాజెక్టులకు వెళ్లండి", share: "భాగస్వామ్యం", del: "తొలగించు", restore: "పునరుద్ధరించు", delPerm: "శాశ్వతంగా తొలగించు", rename: "పేరు మార్చు", logoutText: "ఖాతా సెషన్" },
+            ml: { subtitle: "പ്രൊഫഷണൽ തിരക്കഥ സ്റ്റുഡിയോ", email: "ഇമെയിൽ വിലാസം", password: "പാസ്‌വേഡ്", loginHint: "*പുതിയതാണെങ്കിൽ, പ്രൊഫൈൽ യാന്ത്രികമായി സൃഷ്ടിക്കപ്പെടും.", forgotPass: "പാസ്‌വേഡ് മറന്നോ?", loginBtn: "ലോഗിൻ ചെയ്യുക", navProj: "/ പദ്ധതികൾ", myStudio: "എന്റെ സ്റ്റുഡിയോ", studioSub: "അടിസ്ഥാന തിരക്കഥ", newProjBtn: "+ പുതിയ പ്രോജക്റ്റ്", tabProj: "പദ്ധതികൾ", tabShot: "ഷോട്ട് ഡിവിഷൻ", tabSet: "ക്രമീകരണങ്ങൾ", tabTrash: "ചവറ്റുകുട്ട", recProj: "സമീപകാല പ്രോജക്റ്റുകൾ", selShotProj: "പ്രോജക്റ്റ് തിരഞ്ഞെടുക്കുക", username: "അദ്വിതീയ ഉപയോക്തൃനാമം", secureSave: "സുരക്ഷിതമായി സംരക്ഷിക്കുക", secPass: "സുരക്ഷയും പാസ്‌വേഡും", oldPass: "പഴയ പാസ്‌വേഡ്", newPass: "പുതിയ പാസ്‌വേഡ്", chPass: "പാസ്‌വേഡ് മാറ്റുക", appLang: "ആപ്പ് ഭാഷ", backProj: "❮ പ്രോജക്റ്റുകളിലേക്ക് മടങ്ങുക", share: "പങ്കിടുക", del: "ഇല്ലാതാക്കുക", restore: "പുനഃസ്ഥാപിക്കുക", delPerm: "ശാശ്വതമായി ഇല്ലാതാക്കുക", rename: "പേര് മാറ്റുക", logoutText: "അക്കൗണ്ട് സെഷൻ" },
+            kn: { subtitle: "ವೃತ್ತಿಪರ ಚಿತ್ರಕಥೆ ಸ್ಟುಡಿಯೋ", email: "ಇಮೇಲ್ ವಿಳಾಸ", password: "ಪಾಸ್‌ವರ್ಡ್", loginHint: "*ಹೊಸದಾಗಿದ್ದರೆ, ಪ್ರೊಫೈಲ್ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ರಚನೆಯಾಗುತ್ತದೆ.", forgotPass: "ಪಾಸ್‌ವರ್ಡ್ ಮರೆತಿರಾ?", loginBtn: "ಲಾಗಿನ್ ಮಾಡಿ", navProj: "/ ಯೋಜನೆಗಳು", myStudio: "ನನ್ನ ಸ್ಟುಡಿಯೋ", studioSub: "ಮೂಲ ಚಿತ್ರಕಥೆ", newProjBtn: "+ ಹೊಸ ಯೋಜನೆ", tabProj: "ಯೋಜನೆಗಳು", tabShot: "ಶಾಟ್ ವಿಭಾಗ", tabSet: "ಸೆಟ್ಟಿಂಗ್‌ಗಳು", tabTrash: "ಕಸ", recProj: "ಇತ್ತೀಚಿನ ಯೋಜನೆಗಳು", selShotProj: "ಯೋಜನೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ", username: "ವಿಶಿಷ್ಟ ಬಳಕೆದಾರಹೆಸರು", secureSave: "ಉಳಿಸಿ", secPass: "ಭದ್ರತೆ & ಪಾಸ್‌ವರ್ಡ್", oldPass: "ಹಳೆಯ ಪಾಸ್‌ವರ್ಡ್", newPass: "ಹೊಸ ಪಾಸ್‌ವರ್ಡ್", chPass: "ಪಾಸ್‌ವರ್ಡ್ ಬದಲಾಯಿಸಿ", appLang: "ಅಪ್ಲಿಕೇಶನ್ ಭಾಷೆ", backProj: "❮ ಯೋಜನೆಗಳಿಗೆ ಹಿಂತಿರುಗಿ", share: "ಹಂಚಿಕೊಳ್ಳಿ", del: "ಅಳಿಸಿ", restore: "ಮರುಸ್ಥಾಪಿಸಿ", delPerm: "ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಿ", rename: "ಹೆಸರು ಬದಲಾಯಿಸಿ", logoutText: "ಖಾತೆ ಸೆಷನ್" }
+        };
+
+        let currentLang = 'en';
+        window.currentPageColor = 'page-white';
+
+        // Core Variables
         let savedProjects = JSON.parse(localStorage.getItem('meticulaProjects')) || [];
+        let appUsers = JSON.parse(localStorage.getItem('met_users')) || {};
+        let loggedInEmail = null;
         let currentProjectId = null;
         let activeWatermark = "";
         let saveTimeout;
-        let currentTab = 'projects'; // Track active sidebar tab
+        let currentTab = 'projects';
+        let currentBase64Image = ""; 
 
         document.addEventListener("DOMContentLoaded", function() {
+            const savedTheme = localStorage.getItem('met_theme') || 'dark';
+            setTheme(savedTheme);
+            document.getElementById('themePicker').value = savedTheme;
+            
+            const savedLang = localStorage.getItem('met_lang') || 'en';
+            document.getElementById('langPicker').value = savedLang;
+            applyLanguage(savedLang);
+
             document.getElementById("togglePasswordBtn").addEventListener("click", function() {
                 const pass = document.getElementById("passwordField");
                 if (pass.type === "password") { pass.type = "text"; this.textContent = "Hide"; } 
                 else { pass.type = "password"; this.textContent = "Show"; }
             });
-
-            document.getElementById("googleBtn").addEventListener("click", () => document.getElementById("googleModalOverlay").style.display = "flex");
-            document.getElementById("closeModalBtn").addEventListener("click", () => document.getElementById("googleModalOverlay").style.display = "none");
             
             const newProjOverlay = document.getElementById("newProjectModalOverlay");
             document.getElementById("openNewProjectModalBtn").addEventListener("click", () => {
                 document.getElementById("newProjectName").value = "";
                 newProjOverlay.style.display = "flex";
-                document.getElementById("newProjectName").focus();
+                setTimeout(() => document.getElementById("newProjectName").focus(), 100);
             });
             document.getElementById("closeNewProjectBtn").addEventListener("click", () => newProjOverlay.style.display = "none");
             
@@ -371,38 +583,187 @@
                 if (e.key === "Enter") { e.preventDefault(); document.getElementById("saveNewProjectBtn").click(); }
             });
 
-            document.getElementById("loginForm").addEventListener("submit", function(e) { e.preventDefault(); simulateLogin(); });
             document.execCommand('defaultParagraphSeparator', false, 'p');
-
-            renderDashboard();
         });
 
         // ----------------------------------------
-        // TAB & DASHBOARD LOGIC
+        // AUTHENTICATION & SETTINGS
         // ----------------------------------------
+        document.getElementById("loginForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const email = document.getElementById("emailField").value.trim();
+            const pass = document.getElementById("passwordField").value;
+
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(email)) {
+                alert("Please enter a validly formatted email address (e.g. yourname@domain.com).");
+                return;
+            }
+
+            if(!appUsers[email]) {
+                let defaultName = email.split('@')[0];
+                let counter = 1;
+                while(Object.values(appUsers).some(u => u.name.toLowerCase() === defaultName.toLowerCase())) {
+                    defaultName = email.split('@')[0] + counter;
+                    counter++;
+                }
+                appUsers[email] = { password: pass, name: defaultName };
+                localStorage.setItem('met_users', JSON.stringify(appUsers));
+                alert("New profile created and linked to this email.");
+            } else {
+                if(appUsers[email].password !== pass) {
+                    alert("Authentication Failed: Incorrect Password.");
+                    return;
+                }
+            }
+
+            loggedInEmail = email;
+            syncUserProfile();
+
+            document.getElementById("login-view").classList.remove("active");
+            switchTab('projects');
+            setTimeout(() => document.getElementById("dashboard-view").classList.add("active"), 300); 
+        });
+
+        function forgotPassword() {
+            const email = prompt("Enter your registered email address for password reset:");
+            if(email && email.trim() !== "") {
+                alert(`A password reset validation link has been sent to ${email}.\nPlease check your inbox.`);
+            }
+        }
+
+        function syncUserProfile() {
+            if(!loggedInEmail || !appUsers[loggedInEmail]) return;
+            const uName = appUsers[loggedInEmail].name;
+            document.getElementById("displayUserName").innerText = uName;
+            document.getElementById("avatarIcon").innerText = uName.charAt(0).toUpperCase();
+            
+            const emailField = document.getElementById("setDisplayEmail");
+            if(emailField) emailField.value = loggedInEmail;
+
+            const nameDisplay = document.getElementById("settingsCurrentUsername");
+            if(nameDisplay) nameDisplay.innerText = uName;
+        }
+
+        function logout() {
+            loggedInEmail = null;
+            document.getElementById("dashboard-view").classList.remove("active");
+            setTimeout(() => { document.getElementById("login-view").classList.add("active"); document.getElementById("loginForm").reset(); }, 300);
+        }
+
+        function updateProfile() {
+            const newName = document.getElementById('setUserName').value.trim();
+            if(newName && loggedInEmail) {
+                const isTaken = Object.entries(appUsers).some(([email, data]) => email !== loggedInEmail && data.name.toLowerCase() === newName.toLowerCase());
+                
+                if (isTaken) {
+                    alert("This username is already taken by another user. Please choose a unique one.");
+                    return;
+                }
+
+                appUsers[loggedInEmail].name = newName;
+                localStorage.setItem('met_users', JSON.stringify(appUsers));
+                syncUserProfile();
+                document.getElementById('setUserName').value = ""; // Clear input
+                alert("Username successfully updated.");
+            }
+        }
+
+        function changePassword() {
+            const oldP = document.getElementById('oldPass').value;
+            const newP = document.getElementById('newPass').value;
+            if(!oldP || !newP) { alert("Please fill both password fields."); return; }
+            if(appUsers[loggedInEmail].password !== oldP) { alert("Security Alert: Current password is incorrect."); return; }
+
+            appUsers[loggedInEmail].password = newP;
+            localStorage.setItem('met_users', JSON.stringify(appUsers));
+            alert("Security Validation Complete: Password successfully updated!");
+            document.getElementById('oldPass').value = ''; document.getElementById('newPass').value = '';
+        }
+
+        function deleteMyAccount() {
+            if(!loggedInEmail) return;
+            if(confirm("CRITICAL WARNING: Are you sure you want to permanently delete your account and ALL associated projects? This action CANNOT be undone.")) {
+                const pass = prompt("Security Verification: Please type your current password to confirm account deletion:");
+                if(pass === null) return; 
+                
+                if(pass === appUsers[loggedInEmail].password) {
+                    savedProjects = savedProjects.filter(p => p.ownerEmail !== loggedInEmail);
+                    saveToLocalStorage();
+                    
+                    delete appUsers[loggedInEmail];
+                    localStorage.setItem('met_users', JSON.stringify(appUsers));
+                    
+                    alert("Your account and all associated data have been permanently deleted.");
+                    logout();
+                } else {
+                    alert("Incorrect password. Account deletion aborted.");
+                }
+            }
+        }
+
+        // Language UI Updater
+        function applyLanguage(lang) {
+            currentLang = lang;
+            const dict = i18n[lang];
+            if(!dict) return;
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(dict[key]) el.innerText = dict[key];
+            });
+            document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+                const key = el.getAttribute('data-i18n-ph');
+                if(dict[key]) el.placeholder = dict[key];
+            });
+            
+            if (loggedInEmail) renderDashboard();
+        }
+
+        function changeLanguage() {
+            const lang = document.getElementById('langPicker').value;
+            localStorage.setItem('met_lang', lang);
+            applyLanguage(lang);
+        }
+
+        // ----------------------------------------
+        // DASHBOARD & CARDS
+        // ----------------------------------------
+        function setTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('met_theme', theme);
+        }
+
         function switchTab(tab) {
             currentTab = tab;
-            
-            // Update Sidebar UI
-            document.getElementById('nav-projects').classList.remove('active');
-            document.getElementById('nav-trash').classList.remove('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(`nav-${tab}`).classList.add('active');
             
-            // Update Title
-            document.getElementById('mainTitle').innerText = tab === 'projects' ? "Recent Projects" : "Trash";
+            const navText = i18n[currentLang] ? i18n[currentLang][`tab${tab.charAt(0).toUpperCase() + tab.slice(1, 4)}`] || tab.toUpperCase() : tab.toUpperCase();
+            document.getElementById('nav-indicator').innerText = `/ ${navText.toUpperCase()}`;
             
-            renderDashboard();
+            document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+
+            if (tab === 'projects' || tab === 'trash' || tab === 'shots') renderDashboard();
         }
 
         function renderDashboard() {
-            const list = document.getElementById("recentProjectsList");
-            list.innerHTML = "";
+            let listContainerId = 'recentProjectsList';
+            if (currentTab === 'trash') listContainerId = 'trashProjectsList';
+            else if (currentTab === 'shots') listContainerId = 'shotProjectsList';
+            
+            const list = document.getElementById(listContainerId);
+            if(!list || !loggedInEmail) return;
 
-            // Filter based on active tab
-            let displayProjects = savedProjects.filter(p => currentTab === 'projects' ? !p.isTrashed : p.isTrashed);
+            list.innerHTML = "";
+            let displayProjects = savedProjects.filter(p => p.ownerEmail === loggedInEmail && (currentTab === 'trash' ? p.isTrashed : !p.isTrashed));
+            const dict = i18n[currentLang] || i18n['en'];
 
             if (displayProjects.length === 0) {
-                const emptyMsg = currentTab === 'projects' ? "No projects yet. Click '+ NEW PROJECT' to start writing." : "Your trash is empty.";
+                let emptyMsg = "No projects yet. Click '+ NEW PROJECT' to start writing.";
+                if (currentTab === 'trash') emptyMsg = "Your trash is empty.";
+                else if (currentTab === 'shots') emptyMsg = "No active projects available for shot division.";
                 list.innerHTML = `<div class="no-projects">${emptyMsg}</div>`;
                 return;
             }
@@ -412,155 +773,169 @@
             displayProjects.forEach(proj => {
                 const initial = proj.name.charAt(0).toUpperCase();
                 const card = document.createElement("div");
-                card.className = "project-card";
+                card.className = "project-card clickable";
                 
-                // Only allow opening projects if we are in the active 'projects' tab
-                if (currentTab === 'projects') {
-                    card.onclick = () => openExistingProject(proj.id);
-                }
+                if (currentTab === 'projects') card.onclick = () => openExistingProject(proj.id);
+                else if (currentTab === 'shots') card.onclick = () => openShotDivision(proj.id);
 
-                // Generate Action Buttons based on Tab
                 let actionButtons = "";
                 if (currentTab === 'projects') {
                     actionButtons = `
-                        <button class="btn-action share" onclick="shareProjectCard(event, '${proj.id}')">Share</button>
-                        <button class="btn-action" onclick="moveToTrash(event, '${proj.id}')">Delete</button>
+                        <button class="btn-action share" onclick="shareProject(event, '${proj.id}')">${dict.share || 'Share'}</button>
+                        <button class="btn-action" onclick="renameProject(event, '${proj.id}')">${dict.rename || 'Rename'}</button>
+                        <button class="btn-action" onclick="moveToTrash(event, '${proj.id}')">${dict.del || 'Delete'}</button>
                     `;
-                } else {
+                } else if (currentTab === 'trash') {
                     actionButtons = `
-                        <button class="btn-action restore" onclick="restoreProject(event, '${proj.id}')">Restore</button>
-                        <button class="btn-action" onclick="permanentlyDelete(event, '${proj.id}')">Delete Permanently</button>
+                        <button class="btn-action restore" onclick="restoreProject(event, '${proj.id}')">${dict.restore || 'Restore'}</button>
+                        <button class="btn-action" onclick="permanentlyDelete(event, '${proj.id}')">${dict.delPerm || 'Delete Permanently'}</button>
                     `;
+                } else if (currentTab === 'shots') {
+                    actionButtons = `<button class="btn-action" onclick="openShotDivision('${proj.id}')">Open Shots</button>`;
                 }
 
                 card.innerHTML = `
                     <div class="project-drag-icon">&#8801;</div>
-                    <div class="project-icon" style="background-color: hsl(${Math.random() * 360}, 70%, 30%)">${initial}</div>
+                    <div class="project-icon" style="background-color: hsl(${Math.random() * 360}, 60%, 40%)">${initial}</div>
                     <div class="project-details">
                         <div class="project-type">Film & TV Screenplay</div>
                         <div class="project-title">${proj.name}</div>
                         <div class="project-meta">Last edited: ${proj.lastEditedStr}</div>
                     </div>
-                    <div class="card-actions">
-                        ${actionButtons}
-                    </div>
+                    <div class="card-actions">${actionButtons}</div>
                 `;
                 list.appendChild(card);
             });
         }
 
-        // ----------------------------------------
-        // TRASH & DELETE FUNCTIONS
-        // ----------------------------------------
-        function moveToTrash(e, id) {
-            e.stopPropagation(); // Prevents the card from opening the editor
-            const proj = savedProjects.find(p => p.id === id);
-            if (proj) {
-                proj.isTrashed = true;
-                saveToLocalStorage();
-                renderDashboard();
-            }
-        }
-
-        function restoreProject(e, id) {
+        function renameProject(e, id) {
             e.stopPropagation();
             const proj = savedProjects.find(p => p.id === id);
-            if (proj) {
-                proj.isTrashed = false;
-                saveToLocalStorage();
-                renderDashboard();
+            if(proj) {
+                const newName = prompt("Enter new project name:", proj.name);
+                if(newName && newName.trim() !== "") {
+                    proj.name = newName.trim();
+                    saveToLocalStorage();
+                    renderDashboard();
+                }
             }
         }
 
-        function permanentlyDelete(e, id) {
-            e.stopPropagation();
-            if (confirm("Are you sure you want to permanently delete this project? This cannot be undone.")) {
-                savedProjects = savedProjects.filter(p => p.id !== id);
-                saveToLocalStorage();
-                renderDashboard();
-            }
+        function shareProject(e, id) { 
+            e.stopPropagation(); 
+            const domain = window.location.origin || "https://meticula.studio";
+            const dummyLink = `${domain}/share/${id.replace('proj_', '')}`;
+            
+            navigator.clipboard.writeText(dummyLink).then(() => {
+                alert(`🔗 Secure Link Copied!\n\n${dummyLink}\n\nYou can share this with your team.`);
+            }).catch(() => {
+                prompt("Copy this link to share:", dummyLink);
+            });
         }
+
+        function moveToTrash(e, id) { e.stopPropagation(); const proj = savedProjects.find(p => p.id === id); if (proj) { proj.isTrashed = true; saveToLocalStorage(); renderDashboard(); } }
+        function restoreProject(e, id) { e.stopPropagation(); const proj = savedProjects.find(p => p.id === id); if (proj) { proj.isTrashed = false; saveToLocalStorage(); renderDashboard(); } }
+        function permanentlyDelete(e, id) { e.stopPropagation(); if (confirm("Permanently delete this project?")) { savedProjects = savedProjects.filter(p => p.id !== id); saveToLocalStorage(); renderDashboard(); } }
 
         // ----------------------------------------
-        // SHARE FUNCTIONS
+        // CORE EDITOR LOGIC & FIXING WATERMARK
         // ----------------------------------------
-        function shareProjectCard(e, id) {
-            e.stopPropagation();
-            const proj = savedProjects.find(p => p.id === id);
-            if (proj) {
-                alert(`Share link generated for "${proj.name}".\n(This would normally copy a secure URL to your clipboard for LinkedIn or email!)`);
-            }
-        }
-
-        function shareCurrentProject() {
-            const proj = savedProjects.find(p => p.id === currentProjectId);
-            if (proj) {
-                alert(`Share link generated for "${proj.name}".\n(This would normally copy a secure URL to your clipboard for LinkedIn or email!)`);
-            }
-        }
-
-        // ----------------------------------------
-        // CORE APP LOGIC (Login, Save, Export)
-        // ----------------------------------------
-        function simulateLogin() {
-            document.getElementById("googleModalOverlay").style.display = "none";
-            document.getElementById("login-view").classList.remove("active");
-            renderDashboard();
-            setTimeout(() => document.getElementById("dashboard-view").classList.add("active"), 300); 
-        }
-
-        function logout() {
-            document.getElementById("dashboard-view").classList.remove("active");
-            setTimeout(() => {
-                document.getElementById("login-view").classList.add("active");
-                document.getElementById("loginForm").reset();
-            }, 300);
-        }
-
         function startNewProject(name) {
             const newId = 'proj_' + Date.now();
             const now = new Date();
             const timeStr = now.toLocaleDateString() + ", " + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            const defaultHTML = `<div class="script-page" contenteditable="true" spellcheck="false" data-page="1" data-watermark="" id="scriptPage1"><p class="scene"><br></p></div>`;
+            
+            const colorClass = 'page-white'; // default
+            
+            // Generate Title Page
+            const titlePageHTML = `
+                <div class="script-page ${colorClass}" contenteditable="true" spellcheck="false" data-page="Title page">
+                    <div class="watermark-overlay" contenteditable="false"></div>
+                    <p class="action" style="text-align: center; margin-top: 2.5in; font-size: 24pt; font-weight: bold; text-transform: uppercase;">${name}</p>
+                    <p class="action" style="text-align: center; font-size: 14pt; margin-top: 10px;">[Subtitle]</p>
+                    <p class="action" style="text-align: center; margin-top: 40px;">Written by: </p>
+                    <p class="action" style="text-align: center; font-size: 14pt; margin-top: 10px;">Directed by:</p>
+                    <p class="action" style="text-align: center; margin-top: 40px;">Genre: [Genre]</p>
+                    <p class="action" style="text-align: center; margin-top: 10px;">Based on / Inspired by: [Source]</p>
+                    <p class="action" style="margin-top: 2in;">Mobile No: +91 XXXXXXXXXX</p>
+                    <p class="action">Status: [Original / Remake]</p>
+                </div>`;
 
-            const newProject = {
-                id: newId,
-                name: name,
-                lastEditedMs: Date.now(),
-                lastEditedStr: timeStr,
-                pagesHTML: defaultHTML,
-                watermark: "",
-                isTrashed: false // New flag
+            // Generate Script Page 1
+            const scriptPageHTML = `
+                <div class="script-page ${colorClass}" contenteditable="true" spellcheck="false" data-page="1">
+                    <div class="watermark-overlay" contenteditable="false"></div>
+                    <p class="scene" id="p_${Date.now()}">INT. SCENE HEADING - DAY</p>
+                    <p class="action" id="p_${Date.now()+1}"><br></p>
+                </div>`;
+
+            const defaultHTML = titlePageHTML + scriptPageHTML;
+
+            const newProject = { 
+                id: newId, 
+                ownerEmail: loggedInEmail, 
+                name: name, 
+                pageColor: colorClass,
+                lastEditedMs: Date.now(), 
+                lastEditedStr: timeStr, 
+                pagesHTML: defaultHTML, 
+                watermark: "", 
+                isTrashed: false, 
+                shots: {} 
             };
-
-            savedProjects.push(newProject);
-            saveToLocalStorage();
-            switchTab('projects'); // Ensure we are on projects tab
+            
+            savedProjects.push(newProject); saveToLocalStorage();
+            if(currentTab !== 'projects') switchTab('projects');
             openExistingProject(newId);
         }
 
         function openExistingProject(id) {
             const proj = savedProjects.find(p => p.id === id);
-            if (!proj || proj.isTrashed) return; // Prevent opening trashed projects
+            if (!proj || proj.isTrashed) return;
+            if (!proj.shots) proj.shots = {};
 
             currentProjectId = id;
             activeWatermark = proj.watermark || "";
+            window.currentPageColor = proj.pageColor || 'page-white';
+            
             document.getElementById("editorTitle").innerText = `${proj.name} - Script`;
+            document.getElementById('pageColorToggle').value = window.currentPageColor;
             
             const container = document.getElementById('pagesContainer');
             container.innerHTML = proj.pagesHTML;
             
-            const pages = document.querySelectorAll('.script-page');
-            document.getElementById('pageCountDisplay').innerText = `Total Pages: ${pages.length}`;
-            
+            applyPhysicalWatermarks(activeWatermark);
+
+            document.getElementById('pageCountDisplay').innerText = `Total Pages: ${document.querySelectorAll('.script-page').length}`;
             openEditor();
+        }
+
+        function updatePageColor(colorClass) {
+            window.currentPageColor = colorClass;
+            document.querySelectorAll('#pagesContainer .script-page').forEach(page => {
+                page.classList.remove('page-white', 'page-red');
+                page.classList.add(colorClass);
+            });
+            saveCurrentProjectData();
+        }
+
+        function applyPhysicalWatermarks(text) {
+            document.querySelectorAll('.script-page').forEach(page => {
+                let wmLayer = page.querySelector('.watermark-overlay');
+                if(!wmLayer) {
+                    wmLayer = document.createElement('div');
+                    wmLayer.className = 'watermark-overlay';
+                    wmLayer.contentEditable = "false";
+                    page.prepend(wmLayer);
+                }
+                wmLayer.innerText = text;
+            });
         }
 
         document.getElementById('pagesContainer').addEventListener('input', () => {
             clearTimeout(saveTimeout);
             document.getElementById('saveStatus').innerText = "Saving... ⏳";
             document.getElementById('saveStatus').style.color = "var(--grey-text)";
-            
             saveTimeout = setTimeout(() => { saveCurrentProjectData(); }, 1000); 
         });
 
@@ -569,15 +944,23 @@
             const projIndex = savedProjects.findIndex(p => p.id === currentProjectId);
             if (projIndex > -1) {
                 const now = new Date();
-                savedProjects[projIndex].pagesHTML = document.getElementById('pagesContainer').innerHTML;
+                const container = document.getElementById('pagesContainer');
+                
+                const seenIds = new Set();
+                container.querySelectorAll('p').forEach((p) => {
+                    if(!p.id || seenIds.has(p.id)) { p.id = 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6); }
+                    seenIds.add(p.id);
+                });
+
+                savedProjects[projIndex].pagesHTML = container.innerHTML;
                 savedProjects[projIndex].watermark = activeWatermark;
+                savedProjects[projIndex].pageColor = window.currentPageColor;
                 savedProjects[projIndex].lastEditedMs = Date.now();
                 savedProjects[projIndex].lastEditedStr = now.toLocaleDateString() + ", " + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 saveToLocalStorage();
                 
                 const status = document.getElementById('saveStatus');
-                status.innerText = "Saved to browser. ✅";
-                status.style.color = "var(--green-save)";
+                status.innerText = "Saved to browser. ✅"; status.style.color = "var(--green-save)";
                 setTimeout(() => { status.style.color = "var(--grey-text)"; }, 2000);
             }
         }
@@ -586,38 +969,26 @@
 
         function openEditor() {
             document.getElementById("dashboard-view").classList.remove("active");
-            setTimeout(() => {
-                document.getElementById("editor-view").classList.add("active");
-                const firstP = document.querySelector('.script-page p');
-                if(firstP) {
-                    const range = document.createRange();
-                    const sel = window.getSelection();
-                    range.selectNodeContents(firstP);
-                    range.collapse(false);
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-                    firstP.focus();
-                }
-            }, 300);
+            setTimeout(() => { document.getElementById("editor-view").classList.add("active"); }, 300);
         }
 
         function closeEditor() {
-            saveCurrentProjectData(); 
-            renderDashboard(); 
+            saveCurrentProjectData(); renderDashboard(); 
             document.getElementById("editor-view").classList.remove("active");
             setTimeout(() => { document.getElementById("dashboard-view").classList.add("active"); }, 300);
         }
 
-        // Editor Formats & Toolbar Logic
-        const pagesContainer = document.getElementById('pagesContainer');
-        const formatSelector = document.getElementById('formatSelector');
+        function toggleSceneNumbers() {
+            const toggle = document.getElementById('sceneNumToggle').checked;
+            if(toggle) document.getElementById('pagesContainer').classList.add('show-scene-numbers');
+            else document.getElementById('pagesContainer').classList.remove('show-scene-numbers');
+        }
 
         function setWatermark() {
             const userInput = prompt("Enter watermark text (leave empty to remove):", activeWatermark);
             if (userInput !== null) {
                 activeWatermark = userInput.trim();
-                const pages = document.querySelectorAll('.script-page');
-                pages.forEach(page => { page.setAttribute('data-watermark', activeWatermark); });
+                applyPhysicalWatermarks(activeWatermark);
                 saveCurrentProjectData(); 
             }
         }
@@ -629,27 +1000,36 @@
             return (node && node.nodeName === 'P') ? node : null;
         }
         
-        formatSelector.addEventListener('change', function() {
+        document.getElementById('formatSelector').addEventListener('change', function() {
             const currentP = getCurrentParagraph();
             if (currentP) { currentP.className = this.value; currentP.focus(); saveCurrentProjectData(); }
         });
 
-        pagesContainer.addEventListener('keyup', updateToolbar);
-        pagesContainer.addEventListener('click', updateToolbar);
+        document.getElementById('pagesContainer').addEventListener('keyup', updateToolbar);
+        document.getElementById('pagesContainer').addEventListener('click', updateToolbar);
 
         function updateToolbar() {
             const currentP = getCurrentParagraph();
             if (currentP && currentP.className) {
-                if (Array.from(formatSelector.options).some(opt => opt.value === currentP.className)) { formatSelector.value = currentP.className; }
-            } else if (currentP && !currentP.className) {
-                currentP.className = 'action'; formatSelector.value = 'action';
+                if (Array.from(document.getElementById('formatSelector').options).some(opt => opt.value === currentP.className)) { document.getElementById('formatSelector').value = currentP.className; }
             }
         }
 
-        pagesContainer.addEventListener('keydown', function(e) {
+        document.getElementById('pagesContainer').addEventListener('keydown', function(e) {
+            const currentP = getCurrentParagraph();
+            if (!currentP) return;
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                if (currentP.className === 'character') currentP.className = 'parenthetical';
+                else if (currentP.className === 'parenthetical') currentP.className = 'dialogue';
+                else if (currentP.className === 'dialogue') currentP.className = 'action';
+                else if (currentP.className === 'action') currentP.className = 'character';
+                else if (currentP.className === 'scene') currentP.className = 'action';
+                else currentP.className = 'action';
+                updateToolbar();
+                saveCurrentProjectData();
+            }
             if (e.key === 'Enter') {
-                const currentP = getCurrentParagraph();
-                if (!currentP) return;
                 setTimeout(() => {
                     const newP = getCurrentParagraph();
                     if (!newP || newP === currentP) return;
@@ -663,7 +1043,7 @@
             }
         });
 
-        pagesContainer.addEventListener('input', function(e) {
+        document.getElementById('pagesContainer').addEventListener('input', function(e) {
             const activePage = e.target.closest('.script-page');
             if (!activePage) return;
             if (activePage.scrollHeight > activePage.clientHeight) {
@@ -671,17 +1051,31 @@
                 if (!overflowP) return;
                 let nextPage = activePage.nextElementSibling;
                 if (!nextPage) {
-                    const currentPageCount = document.querySelectorAll('.script-page').length;
+                    
+                    // Smart Page Numbering
+                    let currentMax = 0;
+                    document.querySelectorAll('#pagesContainer .script-page').forEach(pg => {
+                        let n = parseInt(pg.getAttribute('data-page'));
+                        if(!isNaN(n) && n > currentMax) currentMax = n;
+                    });
+                    
                     nextPage = document.createElement('div');
-                    nextPage.className = 'script-page';
+                    nextPage.className = 'script-page ' + window.currentPageColor;
                     nextPage.contentEditable = "true";
                     nextPage.spellcheck = false;
-                    nextPage.setAttribute('data-page', currentPageCount + 1);
-                    nextPage.setAttribute('data-watermark', activeWatermark); 
-                    pagesContainer.appendChild(nextPage);
-                    document.getElementById('pageCountDisplay').innerText = `Total Pages: ${currentPageCount + 1}`;
+                    nextPage.setAttribute('data-page', currentMax + 1);
+                    
+                    const wm = document.createElement('div');
+                    wm.className = 'watermark-overlay';
+                    wm.contentEditable = "false";
+                    wm.innerText = activeWatermark;
+                    nextPage.appendChild(wm);
+
+                    document.getElementById('pagesContainer').appendChild(nextPage);
+                    document.getElementById('pageCountDisplay').innerText = `Total Pages: ${document.querySelectorAll('.script-page').length}`;
                 }
-                nextPage.prepend(overflowP);
+                nextPage.insertBefore(overflowP, nextPage.querySelector('.watermark-overlay')?.nextSibling || nextPage.firstChild);
+                
                 const range = document.createRange();
                 const sel = window.getSelection();
                 range.selectNodeContents(overflowP);
@@ -692,67 +1086,184 @@
             }
         });
 
+        // Export System
         function exportScript() {
             const proj = savedProjects.find(p => p.id === currentProjectId);
             if(!proj) return;
             const format = document.getElementById('exportFormat').value;
             const formattedName = proj.name.replace(/\s+/g, '_');
             document.getElementById('saveStatus').innerText = "Processing File... ⏳";
-            if (format === 'txt') { saveAsTXT(formattedName, proj.name); showSuccessMessage(format); } 
-            else if (format === 'html') { saveAsHTML(formattedName, proj.name); showSuccessMessage(format); } 
-            else if (format === 'pdf') { saveAsPDF(formattedName, format); }
+            
+            if(document.getElementById('sceneNumToggle').checked) {
+                let count = 1;
+                document.querySelectorAll('#pagesContainer .script-page p.scene').forEach(p => {
+                    const span = document.createElement('span'); span.className = 'temp-scene-num'; span.innerText = count + ". "; span.style.color = '#e50914'; span.style.fontWeight = 'bold'; span.style.position = 'absolute'; span.style.left = '-0.6in'; p.prepend(span); count++;
+                });
+                document.getElementById('pagesContainer').classList.remove('show-scene-numbers');
+            }
+
+            if (format === 'pdf') {
+                const element = document.createElement('div');
+                document.querySelectorAll('#pagesContainer .script-page').forEach(page => { const clone = page.cloneNode(true); clone.style.boxShadow = 'none'; clone.style.margin = '0'; element.appendChild(clone); });
+                html2pdf().set({ margin: 0, filename: `${formattedName}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(element).save().then(() => cleanExport());
+            } else { cleanExport(); alert("Saving as Text/Web is simulated."); }
         }
 
-        function showSuccessMessage(format) {
+        function cleanExport() {
+            document.querySelectorAll('.temp-scene-num').forEach(el => el.remove());
+            if(document.getElementById('sceneNumToggle').checked) document.getElementById('pagesContainer').classList.add('show-scene-numbers');
             const statusMsg = document.getElementById('saveStatus');
-            statusMsg.innerText = `Script Saved as ${format.toUpperCase()}! ✅`;
-            statusMsg.style.color = "var(--green-save)";
+            statusMsg.innerText = `Script Downloaded! ✅`; statusMsg.style.color = "var(--green-save)";
             setTimeout(() => { statusMsg.style.color = "var(--grey-text)"; }, 3000);
         }
 
-        function saveAsTXT(filename, realName) {
-            const pages = document.querySelectorAll('.script-page');
-            let scriptText = `TITLE: ${realName.toUpperCase()}\n\n`;
-            pages.forEach((page, index) => {
-                const paragraphs = page.querySelectorAll('p');
-                paragraphs.forEach(p => {
-                    const type = p.className;
-                    let text = p.innerText.trim();
-                    if(!text) return; 
-                    if (type === 'character') scriptText += `\n          ${text.toUpperCase()}\n`;
-                    else if (type === 'dialogue') scriptText += `     ${text}\n`;
-                    else if (type === 'parenthetical') scriptText += `        (${text})\n`;
-                    else if (type === 'scene') scriptText += `\n${text.toUpperCase()}\n\n`;
-                    else if (type === 'transition') scriptText += `\n                                      ${text.toUpperCase()}\n\n`;
-                    else scriptText += `${text}\n\n`;
+        // ----------------------------------------
+        // SHOT DIVISION ENGINE
+        // ----------------------------------------
+        function openShotDivision(id) {
+            saveCurrentProjectData(); 
+            const proj = savedProjects.find(p => p.id === id);
+            currentProjectId = id;
+            if(!proj.shots) proj.shots = {};
+
+            document.getElementById("shotEditorTitle").innerText = `${proj.name} - Shot Division`;
+            const canvas = document.getElementById("shotCanvas");
+            canvas.innerHTML = '';
+            
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = proj.pagesHTML;
+            
+            tempDiv.querySelectorAll('.script-page').forEach(page => {
+                page.contentEditable = "false"; 
+
+                page.querySelectorAll('p').forEach((p) => {
+                    if(!p.innerText.trim()) return; 
+
+                    const btn = document.createElement('button');
+                    btn.className = "btn-add-shot";
+                    
+                    if(proj.shots[p.id]) {
+                        btn.innerText = "+ Edit Shot";
+                        btn.onclick = () => openShotModal(p.id, true);
+                        
+                        const shotCard = createShotHTML(proj.shots[p.id], p.id);
+                        p.insertAdjacentElement('afterend', shotCard);
+                    } else {
+                        btn.innerText = "+ Add Shot";
+                        btn.onclick = () => openShotModal(p.id, false);
+                    }
+                    p.appendChild(btn);
                 });
-                scriptText += `\n================ Page ${index + 1} ================\n\n`;
+                
+                canvas.appendChild(page);
             });
-            downloadFile(scriptText, `${filename}.txt`, 'text/plain');
+
+            document.getElementById("dashboard-view").classList.remove("active");
+            document.getElementById("shot-division-view").classList.add("active");
         }
 
-        function saveAsHTML(filename, realName) {
-            const css = document.querySelector('style').innerText;
-            let pagesHTML = "";
-            document.querySelectorAll('.script-page').forEach(page => { pagesHTML += `<div class="script-page" data-page="${page.getAttribute('data-page')}" data-watermark="${page.getAttribute('data-watermark')}">${page.innerHTML}</div>`; });
-            const htmlContent = `<!DOCTYPE html><html><head><title>${realName}</title><link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"><style>body { background: #333; display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 40px;} ${css}</style></head><body>${pagesHTML}</body></html>`;
-            downloadFile(htmlContent, `${filename}.html`, 'text/html');
+        function closeShotDivision() {
+            document.getElementById("shot-division-view").classList.remove("active");
+            document.getElementById("dashboard-view").classList.add("active");
         }
 
-        function saveAsPDF(filename, format) {
-            const element = document.createElement('div');
-            document.querySelectorAll('.script-page').forEach(page => {
-                const clone = page.cloneNode(true);
-                clone.style.boxShadow = 'none'; clone.style.margin = '0'; element.appendChild(clone);
+        function createShotHTML(shotData, elementId) {
+            const card = document.createElement('div');
+            card.className = "shot-card";
+            card.innerHTML = `
+                ${shotData.img ? `<img src="${shotData.img}">` : ''}
+                <div class="shot-info">
+                    <div class="shot-angle">${shotData.angle}</div>
+                    <div class="shot-desc">${shotData.desc || 'No description provided.'}</div>
+                    <div class="shot-actions">
+                        <button class="btn-small" onclick="openShotModal('${elementId}', true)">Edit & Change</button>
+                        <button class="btn-small danger" onclick="deleteShot('${elementId}')">Remove Shot</button>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function openShotModal(pId, isEdit) {
+            document.getElementById('currentShotPId').value = pId;
+            const proj = savedProjects.find(p => p.id === currentProjectId);
+
+            if (isEdit && proj.shots[pId]) {
+                const s = proj.shots[pId];
+                document.getElementById('shotAngle').value = s.angle;
+                document.getElementById('shotDesc').value = s.desc;
+                if(s.img) {
+                    currentBase64Image = s.img;
+                    document.getElementById('shotImagePreview').src = currentBase64Image;
+                    document.getElementById('shotImagePreview').style.display = 'block';
+                } else {
+                    currentBase64Image = "";
+                    document.getElementById('shotImagePreview').style.display = "none";
+                }
+                document.getElementById('saveShotBtn').innerText = "Update Shot Line";
+            } else {
+                document.getElementById('shotDesc').value = "";
+                document.getElementById('shotAngle').selectedIndex = 0;
+                document.getElementById('shotImagePreview').style.display = "none";
+                document.getElementById('shotImageUpload').value = "";
+                currentBase64Image = "";
+                document.getElementById('saveShotBtn').innerText = "Attach to Script Line";
+            }
+            
+            document.getElementById('shotModalOverlay').style.display = 'flex';
+        }
+
+        function closeShotModal() { document.getElementById('shotModalOverlay').style.display = 'none'; }
+
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 400; const scale = img.width > MAX_WIDTH ? (MAX_WIDTH / img.width) : 1;
+                    canvas.width = img.width * scale; canvas.height = img.height * scale;
+                    const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    currentBase64Image = canvas.toDataURL('image/jpeg', 0.6);
+                    document.getElementById('shotImagePreview').src = currentBase64Image;
+                    document.getElementById('shotImagePreview').style.display = 'block';
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function saveShotDetails() {
+            const pId = document.getElementById('currentShotPId').value;
+            const proj = savedProjects.find(p => p.id === currentProjectId);
+            
+            proj.shots[pId] = { angle: document.getElementById('shotAngle').value, desc: document.getElementById('shotDesc').value, img: currentBase64Image };
+            
+            saveToLocalStorage(); closeShotModal(); openShotDivision(currentProjectId); 
+        }
+
+        function deleteShot(pId) {
+            if(confirm("Remove this shot configuration?")) {
+                const proj = savedProjects.find(p => p.id === currentProjectId);
+                if(proj.shots[pId]) delete proj.shots[pId];
+                saveToLocalStorage(); openShotDivision(currentProjectId); 
+            }
+        }
+
+        function downloadShotlistPDF() {
+            const element = document.getElementById('shotCanvas');
+            const proj = savedProjects.find(p => p.id === currentProjectId);
+            
+            document.querySelectorAll('.btn-add-shot').forEach(btn => btn.style.display = 'none');
+            document.querySelectorAll('.shot-actions').forEach(btn => btn.style.display = 'none');
+            
+            html2pdf().set({ margin: 0, filename: `${proj.name.replace(/\s+/g, '_')}_Shotlist.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(element).save().then(() => {
+                document.querySelectorAll('.btn-add-shot').forEach(btn => btn.style.display = 'block');
+                document.querySelectorAll('.shot-actions').forEach(btn => btn.style.display = 'flex');
             });
-            const opt = { margin: 0, filename: `${filename}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
-            html2pdf().set(opt).from(element).save().then(() => { showSuccessMessage(format); });
-        }
-
-        function downloadFile(content, fileName, mimeType) {
-            const blob = new Blob([content], { type: mimeType }); const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = fileName;
-            document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
         }
     </script>
 </body>
