@@ -1,255 +1,1070 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meticula - Screenplay Studio Pro</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+        integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <style>
         /* =========================================
            OMNI-THEME SYSTEM & VARIABLES
            ========================================= */
         :root {
-            --bg-deep: #0a0a0c; --bg-card: rgba(36, 36, 127, 0.7); --black-dark: #0f0f0f;      
-            --black-light: #1a1a1a; --grey-main: #202024; --grey-text: #a0a0a0;        
-            --accent: #e50914; --accent-hover: #b20710; --white: #ffffff;
-            --border-color: rgba(255, 255, 255, 0.1); --grey-editor: #333333;        
-            --green-save: #28a745; 
+            --bg-deep: #0a0a0c;
+            --bg-card: rgba(25, 25, 30, 0.7);
+            --black-dark: #0f0f0f;
+            --black-light: #1a1a1a;
+            --grey-main: #202024;
+            --grey-text: #a0a0a0;
+            --accent: #e50914;
+            --accent-hover: #b20710;
+            --white: #ffffff;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --grey-editor: #333333;
+            --green-save: #28a745;
             --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             --font-script: 'Courier Prime', Courier, 'Nirmala UI', 'Mangal', 'Latha', 'Gautami', 'Kartika', 'Shruti', 'Tunga', monospace;
         }
 
         [data-theme="white"] {
-            --bg-deep: #f4f7f6; --bg-card: #ffffff; --black-dark: #ffffff;
-            --black-light: #fdfdfd; --grey-main: #f0f0f0; --grey-text: #5f6368;
-            --accent: #1a73e8; --accent-hover: #1557b0; --white: #202124;
-            --border-color: #dadce0; --grey-editor: #e8eaed;
+            --bg-deep: #f4f7f6;
+            --bg-card: #ffffff;
+            --black-dark: #ffffff;
+            --black-light: #fdfdfd;
+            --grey-main: #f0f0f0;
+            --grey-text: #5f6368;
+            --accent: #1a73e8;
+            --accent-hover: #1557b0;
+            --white: #202124;
+            --border-color: #dadce0;
+            --grey-editor: #e8eaed;
         }
 
         [data-theme="blue"] {
-            --bg-deep: #010b1a; --bg-card: #02162b; --black-dark: #02162b;
-            --black-light: #03213d; --grey-main: #042a4d; --grey-text: #8fb3d9;
-            --accent: #00d2ff; --accent-hover: #0099cc; --white: #e6f1ff;
-            --border-color: rgba(0, 210, 255, 0.2); --grey-editor: #051c33;
+            --bg-deep: #010b1a;
+            --bg-card: #02162b;
+            --black-dark: #02162b;
+            --black-light: #03213d;
+            --grey-main: #042a4d;
+            --grey-text: #8fb3d9;
+            --accent: #00d2ff;
+            --accent-hover: #0099cc;
+            --white: #e6f1ff;
+            --border-color: rgba(0, 210, 255, 0.2);
+            --grey-editor: #051c33;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
-            font-family: var(--font-family); background-color: var(--bg-deep); color: var(--white);
-            height: 100vh; overflow: hidden; transition: background-color 0.3s, color 0.3s;
+            font-family: var(--font-family);
+            background-color: var(--bg-deep);
+            color: var(--white);
+            height: 100vh;
+            overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
             background-image: radial-gradient(circle at top right, rgba(229, 9, 20, 0.05) 0%, transparent 40%),
-                              radial-gradient(circle at bottom left, rgba(255, 255, 255, 0.02) 0%, transparent 40%);
+                radial-gradient(circle at bottom left, rgba(255, 255, 255, 0.02) 0%, transparent 40%);
         }
-        [data-theme="white"] body { background-image: none; }
+
+        [data-theme="white"] body {
+            background-image: none;
+        }
 
         .app-view {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s;
-            display: flex; flex-direction: column;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s;
+            display: flex;
+            flex-direction: column;
         }
-        .app-view.active { opacity: 1; visibility: visible; }
+
+        .app-view.active {
+            opacity: 1;
+            visibility: visible;
+        }
 
         /* =========================================
            1. LOGIN VIEW STYLES
            ========================================= */
-        #login-view { justify-content: center; align-items: center; }
+        #login-view {
+            justify-content: center;
+            align-items: center;
+        }
+
         .login-container {
-            width: 100%; max-width: 420px; padding: 3rem 2.5rem; text-align: center;
-            background: var(--bg-card); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-color); border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            transform: translateY(20px); animation: slideUp 0.6s ease forwards;
+            width: 100%;
+            max-width: 420px;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            transform: translateY(20px);
+            animation: slideUp 0.6s ease forwards;
         }
-        @keyframes slideUp { to { transform: translateY(0); } }
-        .logo { font-size: 3rem; font-weight: 900; text-transform: uppercase; letter-spacing: -1px; margin-bottom: 0.5rem; background: linear-gradient(to right, var(--white), var(--grey-text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .login-container h2 { font-size: 1.1rem; font-weight: 400; margin-bottom: 2rem; color: var(--grey-text); }
-        .input-group { position: relative; margin-bottom: 1rem; }
-        .input-group input, .modal-input, .settings-select {
-            width: 100%; padding: 1rem 1.2rem; background-color: rgba(0,0,0,0.1); border: 1px solid var(--border-color);
-            border-radius: 8px; color: var(--white); font-size: 1rem; outline: none; transition: all 0.3s;
+
+        @keyframes slideUp {
+            to {
+                transform: translateY(0);
+            }
         }
-        .modal-input { background-color: var(--bg-deep); margin-bottom: 20px;}
-        .input-group input:focus, .modal-input:focus, .settings-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.1); }
-        .toggle-password { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--grey-text); cursor: pointer; }
-        .checkbox-group { display: flex; align-items: center; margin-bottom: 1rem; font-size: 0.9rem; color: var(--grey-text); }
-        .checkbox-group input { margin-right: 0.5rem; accent-color: var(--accent); }
-        
-        .btn-primary { width: 100%; padding: 1rem; background-color: var(--accent); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.3s, transform 0.1s; }
-        .btn-primary:hover { background-color: var(--accent-hover); }
-        .btn-primary:active { transform: scale(0.98); }
-        .btn-danger { background-color: #dc3545; }
-        .btn-danger:hover { background-color: #c82333; }
-        .btn-secondary { background-color: #555; }
-        .btn-secondary:hover { background-color: #444; }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--white), var(--grey-text));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-container h2 {
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 2rem;
+            color: var(--grey-text);
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .input-group input,
+        .modal-input,
+        .settings-select {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            background-color: rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .modal-input {
+            background-color: var(--bg-deep);
+            margin-bottom: 20px;
+        }
+
+        .input-group input:focus,
+        .modal-input:focus,
+        .settings-select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.1);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--grey-text);
+            cursor: pointer;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: var(--grey-text);
+        }
+
+        .checkbox-group input {
+            margin-right: 0.5rem;
+            accent-color: var(--accent);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-secondary {
+            background-color: #555;
+        }
+
+        .btn-secondary:hover {
+            background-color: #444;
+        }
 
         /* =========================================
            2. DASHBOARD VIEW STYLES
            ========================================= */
-        .topbar { height: 65px; background-color: var(--black-dark); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 24px; z-index: 10; transition: 0.3s; }
-        .topbar-left { font-weight: 900; font-size: 1.2rem; letter-spacing: 1px; display: flex; align-items: center; }
-        .topbar-right { display: flex; align-items: center; gap: 24px; }
-        .btn-outline { background: transparent; border: 1px solid var(--grey-text); color: var(--white); padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
-        .btn-outline:hover { border-color: var(--white); }
-        .user-profile { display: flex; align-items: center; gap: 10px; cursor: default; font-size: 0.9rem; }
-        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background-color: var(--accent); color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; text-transform: uppercase; }
-        
-        .main-layout { display: flex; flex: 1; height: calc(100vh - 65px); }
-        .sidebar { width: 260px; background-color: var(--black-dark); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 30px 0; transition: 0.3s; }
-        .studio-header { display: flex; align-items: center; gap: 15px; padding: 0 24px; margin-bottom: 40px; }
-        .studio-icon { width: 45px; height: 45px; background-color: var(--accent); border-radius: 12px; }
-        .studio-info h2 { font-size: 1.2rem; font-weight: 500; }
-        .studio-info p { font-size: 0.75rem; color: var(--grey-text); text-transform: uppercase; margin-top: 4px; }
-        
-        .btn-create { margin: 0 24px 30px 24px; background-color: var(--accent); color: white; border: none; padding: 12px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.2s; text-align: center; }
-        .btn-create:hover { background-color: var(--accent-hover); }
-        
-        .nav-menu { list-style: none; display: flex; flex-direction: column; }
-        .nav-item { padding: 15px 24px; cursor: pointer; color: var(--grey-text); font-size: 0.95rem; transition: all 0.2s; border-left: 4px solid transparent; }
-        .nav-item:hover { color: var(--white); background-color: rgba(128, 128, 128, 0.05); }
-        .nav-item.active { color: var(--accent); border-left-color: var(--accent); background-color: rgba(128, 128, 128, 0.08); font-weight: 500; }
-        
-        .content { flex: 1; padding: 40px; overflow-y: auto; background-color: transparent; }
-        .tab-section { display: none; animation: fadeInRight 0.4s ease forwards; }
-        .tab-section.active { display: block; }
-        .projects-grid { display: flex; flex-direction: column; gap: 15px; }
-        
-        .project-card, .settings-card { 
-            background-color: var(--black-light); border-radius: 12px; padding: 20px; 
-            display: flex; align-items: center; gap: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
-            transition: transform 0.2s, box-shadow 0.2s, border 0.2s; border: 1px solid var(--border-color); 
-            animation: fadeInRight 0.5s ease forwards; position: relative;
+        .topbar {
+            height: 65px;
+            background-color: var(--black-dark);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            z-index: 10;
+            transition: 0.3s;
         }
-        .project-card.clickable:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-color: var(--accent); cursor: pointer; }
-        
-        .project-drag-icon { color: var(--grey-text); font-size: 1.2rem; cursor: grab; }
-        .project-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.5rem; color: white;}
-        .project-details { flex: 1; }
-        .project-type { font-size: 0.75rem; color: var(--grey-text); text-transform: uppercase; letter-spacing: 1px; }
-        .project-title { font-size: 1.3rem; font-weight: 500; margin: 4px 0; color: var(--white); }
-        .project-meta { font-size: 0.85rem; color: var(--grey-text); }
-        
-        .card-actions { display: flex; gap: 10px; opacity: 0; transition: opacity 0.2s; margin-left: auto; }
-        .project-card:hover .card-actions { opacity: 1; }
-        .btn-action { background: rgba(128,128,128,0.2); border: none; color: var(--white); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: 0.2s; }
-        .btn-action:hover { background: var(--accent-hover); color: white;}
-        .btn-action.restore:hover { background: var(--green-save); }
-        .btn-action.share:hover { background: #1a73e8; color: white; }
-        
-        .no-projects { text-align: center; padding: 40px; color: var(--grey-text); border: 2px dashed var(--border-color); border-radius: 12px; }
+
+        .topbar-left {
+            font-weight: 900;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--grey-text);
+            color: var(--white);
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--white);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: default;
+            font-size: 0.9rem;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .main-layout {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 65px);
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--black-dark);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 30px 0;
+            transition: 0.3s;
+        }
+
+        .studio-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 0 24px;
+            margin-bottom: 40px;
+        }
+
+        .studio-icon {
+            width: 45px;
+            height: 45px;
+            background-color: var(--accent);
+            border-radius: 12px;
+        }
+
+        .studio-info h2 {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .studio-info p {
+            font-size: 0.75rem;
+            color: var(--grey-text);
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .btn-create {
+            margin: 0 24px 30px 24px;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-align: center;
+        }
+
+        .btn-create:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-item {
+            padding: 15px 24px;
+            cursor: pointer;
+            color: var(--grey-text);
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-item:hover {
+            color: var(--white);
+            background-color: rgba(128, 128, 128, 0.05);
+        }
+
+        .nav-item.active {
+            color: var(--accent);
+            border-left-color: var(--accent);
+            background-color: rgba(128, 128, 128, 0.08);
+            font-weight: 500;
+        }
+
+        .content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            background-color: transparent;
+        }
+
+        .tab-section {
+            display: none;
+            animation: fadeInRight 0.4s ease forwards;
+        }
+
+        .tab-section.active {
+            display: block;
+        }
+
+        .projects-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .project-card,
+        .settings-card {
+            background-color: var(--black-light);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s, border 0.2s;
+            border: 1px solid var(--border-color);
+            animation: fadeInRight 0.5s ease forwards;
+            position: relative;
+        }
+
+        .project-card.clickable:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .project-drag-icon {
+            color: var(--grey-text);
+            font-size: 1.2rem;
+            cursor: grab;
+        }
+
+        .project-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .project-details {
+            flex: 1;
+        }
+
+        .project-type {
+            font-size: 0.75rem;
+            color: var(--grey-text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .project-title {
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin: 4px 0;
+            color: var(--white);
+        }
+
+        .project-meta {
+            font-size: 0.85rem;
+            color: var(--grey-text);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            margin-left: auto;
+        }
+
+        .project-card:hover .card-actions {
+            opacity: 1;
+        }
+
+        .btn-action {
+            background: rgba(128, 128, 128, 0.2);
+            border: none;
+            color: var(--white);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .btn-action:hover {
+            background: var(--accent-hover);
+            color: white;
+        }
+
+        .btn-action.restore:hover {
+            background: var(--green-save);
+        }
+
+        .btn-action.share:hover {
+            background: #1a73e8;
+            color: white;
+        }
+
+        .no-projects {
+            text-align: center;
+            padding: 40px;
+            color: var(--grey-text);
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+        }
 
         /* Settings UI */
-        .settings-card { flex-direction: column; align-items: stretch; gap: 10px; margin-bottom: 20px;}
-        .s-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border-color); }
-        .s-row:last-child { border-bottom: none; }
-        .settings-select { width: auto; padding: 8px 12px; background-color: var(--bg-deep); }
-        .settings-select option { background-color: var(--black-dark); color: var(--white); }
+        .settings-card {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .s-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .s-row:last-child {
+            border-bottom: none;
+        }
+
+        .settings-select {
+            width: auto;
+            padding: 8px 12px;
+            background-color: var(--bg-deep);
+        }
+
+        /* Style standard dropdowns so options appear correctly */
+        .settings-select option {
+            background-color: var(--black-dark);
+            color: var(--white);
+        }
 
         /* =========================================
            3. MODAL STYLES
            ========================================= */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
-        .custom-modal { background: var(--bg-card); border: 1px solid var(--border-color); width: 400px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; animation: fadeIn 0.2s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--black-dark); border-bottom: 1px solid var(--border-color); font-size: 1rem; font-weight: 500;}
-        .modal-header-actions span { margin-left: 12px; cursor: pointer; font-size: 1.2rem; color: var(--grey-text);}
-        .modal-header-actions span:hover { color: var(--white); }
-        .modal-body { padding: 24px 32px; text-align: left; }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .custom-modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            width: 400px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--black-dark);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .modal-header-actions span {
+            margin-left: 12px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--grey-text);
+        }
+
+        .modal-header-actions span:hover {
+            color: var(--white);
+        }
+
+        .modal-body {
+            padding: 24px 32px;
+            text-align: left;
+        }
 
         /* =========================================
            4. EDITOR VIEW STYLES & WATERMARK
            ========================================= */
-        .editor-layout { display: flex; flex-direction: column; height: 100vh; width: 100%; background-color: var(--bg-deep); }
-        .btn-editor { padding: 8px 16px; background-color: var(--accent); color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-editor:hover { background-color: var(--accent-hover); transform: scale(0.98); }
-        .back-btn { background: none; border: none; color: var(--grey-text); cursor: pointer; font-size: 1rem; font-weight: bold; }
-        .back-btn:hover { color: var(--white); }
-        
-        .export-group { display: flex; align-items: center; background: rgba(0,0,0,0.2); border: 1px solid var(--green-save); border-radius: 4px; overflow: hidden;}
-        
-        .export-select { background: transparent; color: var(--white); border: none; padding: 8px 12px; outline: none; cursor: pointer; font-family: var(--font-family); font-weight: 500;}
-        .export-select option { background-color: #1a1a1a; color: white; }
-        
-        .export-btn { background: var(--green-save); color: white; border: none; padding: 8px 16px; font-weight: bold; cursor: pointer; transition: 0.2s;}
-        .export-btn:hover { background: #218838; }
-        
-        .editor-header { height: 60px; background: var(--black-dark); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; transition: 0.3s;}
-        .header-actions { display: flex; gap: 15px; align-items: center; }
-        .editor-toolbar { height: 50px; background: var(--black-light); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 20px; gap: 15px; flex-shrink: 0; transition: 0.3s;}
-        .format-select { background: var(--bg-deep); color: var(--white); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 4px; outline: none; cursor: pointer; font-family: var(--font-family); }
-        .format-select option { background-color: #1a1a1a; color: white; }
-        
-        .editor-canvas { flex: 1; background-color: var(--grey-editor); overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; gap: 40px; transition: 0.3s;}
-        
-        /* Explicit Page Colors with Black Ink */
+        .editor-layout {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100%;
+            background-color: var(--bg-deep);
+        }
+
+        .btn-editor {
+            padding: 8px 16px;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-editor:hover {
+            background-color: var(--accent-hover);
+            transform: scale(0.98);
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--grey-text);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .back-btn:hover {
+            color: var(--white);
+        }
+
+        .export-group {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--green-save);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .export-select {
+            background: transparent;
+            color: var(--white);
+            border: none;
+            padding: 8px 12px;
+            outline: none;
+            cursor: pointer;
+            font-family: var(--font-family);
+            font-weight: 500;
+        }
+
+        .export-select option {
+            background-color: #1a1a1a;
+            color: white;
+        }
+
+        .export-btn {
+            background: var(--green-save);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .export-btn:hover {
+            background: #218838;
+        }
+
+        .editor-header {
+            height: 60px;
+            background: var(--black-dark);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            flex-shrink: 0;
+            transition: 0.3s;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .editor-toolbar {
+            height: 50px;
+            background: var(--black-light);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 15px;
+            flex-shrink: 0;
+            transition: 0.3s;
+        }
+
+        .format-select {
+            background: var(--bg-deep);
+            color: var(--white);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            font-family: var(--font-family);
+        }
+
+        .format-select option {
+            background-color: #1a1a1a;
+            color: white;
+        }
+
+        .editor-canvas {
+            flex: 1;
+            background-color: var(--grey-editor);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            gap: 40px;
+            transition: 0.3s;
+        }
+
+        /* FIX: Explicit Page Colors with Black Ink */
         .script-page {
-            width: 8.5in; height: 11in; padding: 1in 1in 1in 1.5in; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3); font-family: var(--font-script); font-size: 12pt;
-            line-height: 1.2; outline: none; overflow: hidden; position: relative; flex-shrink: 0; z-index: 1;
+            width: 8.5in;
+            height: 11in;
+            padding: 1in 1in 1in 1.5in;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            font-family: var(--font-script);
+            font-size: 12pt;
+            line-height: 1.2;
+            outline: none;
+            overflow: hidden;
+            position: relative;
+            flex-shrink: 0;
+            z-index: 1;
         }
-        .page-white { background-color: white; color: black; }
-        .page-red { background-color: #ffcccc; color: black; }
-        
-        .script-page::before { content: attr(data-page) "."; position: absolute; top: 0.5in; right: 1in; font-family: var(--font-script); font-size: 12pt; color: inherit; opacity: 0.6; z-index: 10; }
-        
+
+        .page-white {
+            background-color: white;
+            color: black;
+        }
+
+        .page-red {
+            background-color: #ffcccc;
+            color: black;
+        }
+
+        .script-page::before {
+            content: attr(data-page) ".";
+            position: absolute;
+            top: 0.5in;
+            right: 1in;
+            font-family: var(--font-script);
+            font-size: 12pt;
+            color: inherit;
+            opacity: 0.6;
+            z-index: 10;
+        }
+
         .watermark-overlay {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg);
-            font-size: 80px; color: #000; opacity: 0.12; font-family: 'Segoe UI', sans-serif; 
-            font-weight: 900; text-transform: uppercase; pointer-events: none; white-space: nowrap; 
-            z-index: 0; user-select: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 80px;
+            color: #000;
+            opacity: 0.12;
+            font-family: 'Segoe UI', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            pointer-events: none;
+            white-space: nowrap;
+            z-index: 0;
+            user-select: none;
         }
 
-        .script-page p { position: relative; z-index: 2; margin: 0 0 1em 0; min-height: 1em; white-space: pre-wrap; outline: none; }
-        .script-page p:empty::before { content: "\FEFF"; }
-        .script-page p.scene { text-transform: uppercase; font-weight: bold; margin-top: 1.5em; }
-        .script-page p.action { text-transform: none; }
-        .script-page p.character { text-transform: uppercase; margin-left: 2.2in; margin-bottom: 0; width: 50%; }
-        .script-page p.dialogue { margin-left: 1in; margin-right: 1.5in; margin-top: 0; }
-        .script-page p.parenthetical { margin-left: 1.5in; margin-top: 0; margin-bottom: 0; }
-        .script-page p.transition { text-align: right; text-transform: uppercase; margin-top: 1em; }
-        
-        .status-bar { height: 35px; background: var(--black-dark); border-top: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; color: var(--grey-text); font-size: 0.85rem; flex-shrink: 0;}
+        .script-page p {
+            position: relative;
+            z-index: 2;
+            margin: 0 0 1em 0;
+            min-height: 1em;
+            white-space: pre-wrap;
+            outline: none;
+        }
 
-        #pagesContainer.show-scene-numbers { counter-reset: scene; }
-        #pagesContainer.show-scene-numbers .script-page p.scene { counter-increment: scene; position: relative; text-decoration: underline; }
+        .script-page p:empty::before {
+            content: "\FEFF";
+        }
+
+        .script-page p.scene {
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-top: 1.5em;
+        }
+
+        .script-page p.action {
+            text-transform: none;
+        }
+
+        .script-page p.character {
+            text-transform: uppercase;
+            margin-left: 2.2in;
+            margin-bottom: 0;
+            width: 50%;
+        }
+
+        .script-page p.dialogue {
+            margin-left: 1in;
+            margin-right: 1.5in;
+            margin-top: 0;
+        }
+
+        .script-page p.parenthetical {
+            margin-left: 1.5in;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .script-page p.transition {
+            text-align: right;
+            text-transform: uppercase;
+            margin-top: 1em;
+        }
+
+        .status-bar {
+            height: 35px;
+            background: var(--black-dark);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: var(--grey-text);
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        #pagesContainer.show-scene-numbers {
+            counter-reset: scene;
+        }
+
+        #pagesContainer.show-scene-numbers .script-page p.scene {
+            counter-increment: scene;
+            position: relative;
+            text-decoration: underline;
+        }
+
         #pagesContainer.show-scene-numbers .script-page p.scene::before {
-            content: counter(scene) "."; position: absolute; left: -0.6in;
-            color: #e50914; font-weight: bold; font-family: var(--font-family); font-size: 11pt; user-select: none; text-decoration: none;
+            content: counter(scene) ".";
+            position: absolute;
+            left: -0.6in;
+            color: #e50914;
+            font-weight: bold;
+            font-family: var(--font-family);
+            font-size: 11pt;
+            user-select: none;
+            text-decoration: none;
         }
 
         /* =========================================
            5. SHOT DIVISION UI STYLES
            ========================================= */
-        #shot-division-view { background: var(--bg-deep); }
-        .shot-canvas { flex: 1; background-color: var(--grey-editor); overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; gap: 40px; }
-        .shot-canvas .script-page { height: auto !important; min-height: 11in; padding-bottom: 1.5in; }
-        .shot-canvas p { position: relative; padding: 4px 0; border: 1px solid transparent; border-radius: 4px; transition: background 0.2s; }
-        .shot-canvas p:hover { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.1); }
-        
-        .btn-add-shot { position: absolute; right: -1.2in; top: 0; background: var(--accent); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; opacity: 0; transition: 0.2s; font-weight: bold; font-family: var(--font-family); z-index: 10;}
-        .shot-canvas p:hover .btn-add-shot { opacity: 1; }
-        
-        .shot-card { background: #fdfdfd; border: 1px solid #ccc; padding: 15px; border-radius: 8px; display: flex; gap: 15px; align-items: flex-start; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-left: 4px solid var(--accent); margin-top: 10px; margin-bottom: 20px; margin-left: 0.5in; width: calc(100% - 1in); font-family: var(--font-family); font-size: 11pt;}
-        .shot-card img { max-width: 150px; max-height: 100px; object-fit: cover; border-radius: 4px; background: #eee; }
-        .shot-info { flex: 1; }
-        .shot-angle { display: inline-block; background: rgba(229,9,20,0.1); color: var(--accent); padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; margin-bottom: 6px; }
-        .shot-desc { color: #333; line-height: 1.4; }
-        .shot-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
-        .btn-small { background: transparent; border: 1px solid #aaa; color: #555; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; transition: 0.2s; font-weight: bold;}
-        .btn-small:hover { background: #f0f0f0; color: #000; border-color: #555; }
-        .btn-small.danger:hover { background: #ffebeb; color: #dc3545; border-color: #dc3545; }
+        #shot-division-view {
+            background: var(--bg-deep);
+        }
 
-        .drop-zone { border: 2px dashed var(--border-color); border-radius: 8px; padding: 30px; text-align: center; cursor: pointer; color: var(--grey-text); background: rgba(0,0,0,0.2); transition: 0.3s; }
-        .drop-zone:hover { border-color: var(--accent); color: var(--white); }
+        .shot-canvas {
+            flex: 1;
+            background-color: var(--grey-editor);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            gap: 40px;
+        }
+
+        .shot-canvas .script-page {
+            height: auto !important;
+            min-height: 11in;
+            padding-bottom: 1.5in;
+        }
+
+        .shot-canvas p {
+            position: relative;
+            padding: 4px 0;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .shot-canvas p:hover {
+            background: rgba(0, 0, 0, 0.03);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-add-shot {
+            position: absolute;
+            right: -1.2in;
+            top: 0;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: 0.2s;
+            font-weight: bold;
+            font-family: var(--font-family);
+            z-index: 10;
+        }
+
+        .shot-canvas p:hover .btn-add-shot {
+            opacity: 1;
+        }
+
+        .shot-card {
+            background: #fdfdfd;
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--accent);
+            margin-top: 10px;
+            margin-bottom: 20px;
+            margin-left: 0.5in;
+            width: calc(100% - 1in);
+            font-family: var(--font-family);
+            font-size: 11pt;
+        }
+
+        .shot-card img {
+            max-width: 150px;
+            max-height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+            background: #eee;
+        }
+
+        .shot-info {
+            flex: 1;
+        }
+
+        .shot-angle {
+            display: inline-block;
+            background: rgba(229, 9, 20, 0.1);
+            color: var(--accent);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+        }
+
+        .shot-desc {
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .shot-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-small {
+            background: transparent;
+            border: 1px solid #aaa;
+            color: #555;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: bold;
+        }
+
+        .btn-small:hover {
+            background: #f0f0f0;
+            color: #000;
+            border-color: #555;
+        }
+
+        .btn-small.danger:hover {
+            background: #ffebeb;
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            color: var(--grey-text);
+            background: rgba(0, 0, 0, 0.2);
+            transition: 0.3s;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--accent);
+            color: var(--white);
+        }
 
         @media print {
-            .script-page { box-shadow: none; margin: 0; border: none; }
-            .app-view:not(.active) { display: none !important; }
+            .script-page {
+                box-shadow: none;
+                margin: 0;
+                border: none;
+            }
+
+            .app-view:not(.active) {
+                display: none !important;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <!-- 1. LOGIN VIEW -->
@@ -257,22 +1072,50 @@
         <div class="login-container">
             <h1 class="logo">METICULA</h1>
             <h2 data-i18n="subtitle">Professional Screenplay Studio</h2>
-            <form id="loginForm">
-                <div class="input-group">
-                    <input type="email" id="emailField" placeholder="Email Address" data-i18n-ph="email" required>
+            <div id="loginForm" style="display: flex; flex-direction: column; gap: 1rem;">
+                <form id="emailAuthForm" onsubmit="handleEmailAuth(event)"
+                    style="display: flex; flex-direction: column; gap: 1rem; text-align: left; width: 100%;">
+                    <div class="input-group" style="margin-bottom: 0;">
+                        <input type="email" id="emailField" placeholder="Email Address" required>
+                    </div>
+                    <div class="input-group" style="margin-bottom: 0;">
+                        <input type="password" id="passwordField" placeholder="Password" required>
+                    </div>
+
+                    <div style="text-align: right; margin-top: -10px;">
+                        <a href="#" onclick="resetPassword()" style="color: var(--grey-text); font-size: 0.8rem; text-decoration: none;">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" id="authSubmitBtn" class="btn-primary">LOG IN</button>
+
+                    <div style="text-align: center; color: var(--grey-text); font-size: 0.9rem; margin-top: -5px;">
+                        <span id="authToggleText">Don't have an account?</span>
+                        <a href="#" onclick="toggleAuthMode()" id="authToggleLink"
+                            style="color: var(--accent); text-decoration: none; font-weight: bold;">Sign Up</a>
+                    </div>
+                </form>
+
+                <div style="display: flex; align-items: center; margin: 0.5rem 0; color: var(--grey-text);">
+                    <hr style="flex: 1; border: none; border-top: 1px solid var(--border-color);">
+                    <span style="padding: 0 10px; font-size: 0.85rem;">OR</span>
+                    <hr style="flex: 1; border: none; border-top: 1px solid var(--border-color);">
                 </div>
-                <div class="input-group">
-                    <input type="password" id="passwordField" placeholder="Password" data-i18n-ph="password" required>
-                    <button type="button" class="toggle-password" id="togglePasswordBtn">Show</button>
-                </div>
-                <div class="checkbox-group">
-                    <p style="text-align: left; margin-top: -5px;" data-i18n="loginHint">*If new, a profile will be created automatically.</p>
-                </div>
-                
-                <a href="#" onclick="forgotPassword()" data-i18n="forgotPass" style="color:var(--grey-text); font-size:0.85rem; display:block; margin-bottom:1.5rem; text-decoration:none; text-align:left;">Forgot Password?</a>
-                
-                <button type="submit" class="btn-primary" data-i18n="loginBtn">SECURE LOGIN</button>
-            </form>
+
+                <button type="button" class="btn-primary" onclick="signInWithGoogle()"
+                    style="background-color: white; color: black; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <svg width="24" height="24" viewBox="0 0 48 48">
+                        <path fill="#EA4335"
+                            d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                        <path fill="#4285F4"
+                            d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                        <path fill="#FBBC05"
+                            d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                        <path fill="#34A853"
+                            d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                    </svg>
+                    Sign in with Google
+                </button>
+            </div>
         </div>
     </div>
 
@@ -280,7 +1123,9 @@
     <div id="dashboard-view" class="app-view">
         <header class="topbar">
             <div class="topbar-left">
-                METICULA <span id="nav-indicator" style="font-weight: 300; color: var(--grey-text); font-size: 0.9rem; margin-left: 10px;" data-i18n="navProj">/ PROJECTS</span>
+                METICULA <span id="nav-indicator"
+                    style="font-weight: 300; color: var(--grey-text); font-size: 0.9rem; margin-left: 10px;"
+                    data-i18n="navProj">/ PROJECTS</span>
             </div>
             <div class="topbar-right">
                 <button class="btn-outline">UPGRADE PRO</button>
@@ -302,9 +1147,12 @@
                 </div>
                 <button class="btn-create" id="openNewProjectModalBtn" data-i18n="newProjBtn">+ NEW PROJECT</button>
                 <ul class="nav-menu">
-                    <li class="nav-item active" id="nav-projects" onclick="switchTab('projects')" data-i18n="tabProj">Projects</li>
-                    <li class="nav-item" id="nav-shots" onclick="switchTab('shots')" data-i18n="tabShot">Shot Division</li>
-                    <li class="nav-item" id="nav-settings" onclick="switchTab('settings')" data-i18n="tabSet">Settings</li>
+                    <li class="nav-item active" id="nav-projects" onclick="switchTab('projects')" data-i18n="tabProj">
+                        Projects</li>
+                    <li class="nav-item" id="nav-shots" onclick="switchTab('shots')" data-i18n="tabShot">Shot Division
+                    </li>
+                    <li class="nav-item" id="nav-settings" onclick="switchTab('settings')" data-i18n="tabSet">Settings
+                    </li>
                     <li class="nav-item" id="nav-trash" onclick="switchTab('trash')" data-i18n="tabTrash">Trash</li>
                 </ul>
             </aside>
@@ -318,32 +1166,39 @@
 
                 <!-- Tab: Shot Division -->
                 <div id="tab-shots" class="tab-section">
-                    <h2 style="margin-bottom: 24px; font-weight: 400;" data-i18n="selShotProj">Select Project for Shot Division</h2>
+                    <h2 style="margin-bottom: 24px; font-weight: 400;" data-i18n="selShotProj">Select Project for Shot
+                        Division</h2>
                     <div id="shotProjectsList" class="projects-grid"></div>
                 </div>
 
                 <!-- Tab: Settings -->
                 <div id="tab-settings" class="tab-section">
                     <h2 style="margin-bottom: 24px; font-weight: 400;" data-i18n="tabSet">Studio Settings</h2>
-                    
+
                     <div class="settings-card">
                         <h3 style="margin-bottom: 10px; font-weight: 500;">Profile Information</h3>
-                        
+
+                        <!-- FIX: Current Username on left, Input on right -->
                         <div class="s-row">
                             <div>
                                 <span style="color:var(--grey-text); font-size: 0.9rem;">Current Username: </span><br>
-                                <strong id="settingsCurrentUsername" style="color:var(--white); font-size: 1.1rem; display:inline-block; margin-top:4px;"></strong>
+                                <strong id="settingsCurrentUsername"
+                                    style="color:var(--white); font-size: 1.1rem; display:inline-block; margin-top:4px;"></strong>
                             </div>
                             <div style="display:flex; gap:10px; align-items:center;">
-                                <input type="text" id="setUserName" class="settings-select" placeholder="New unique username" style="width: 200px; padding: 8px 12px;">
-                                <button class="btn-primary" style="width: auto; padding: 8px 16px;" onclick="updateProfile()">Change</button>
+                                <input type="text" id="setUserName" class="settings-select"
+                                    placeholder="New unique username" style="width: 200px; padding: 8px 12px;">
+                                <button class="btn-primary" style="width: auto; padding: 8px 16px;"
+                                    onclick="updateProfile()">Change</button>
                             </div>
                         </div>
 
                         <div class="s-row">
                             <div>
                                 <span style="color:var(--grey-text); font-size: 0.9rem;">Email Address</span><br>
-                                <input type="email" id="setDisplayEmail" class="settings-select" readonly title="Email cannot be changed here" style="width: 250px; opacity: 0.7; cursor: not-allowed; padding: 8px 12px; margin-top:4px;">
+                                <input type="email" id="setDisplayEmail" class="settings-select" readonly
+                                    title="Email cannot be changed here"
+                                    style="width: 250px; opacity: 0.7; cursor: not-allowed; padding: 8px 12px; margin-top:4px;">
                             </div>
                         </div>
                     </div>
@@ -352,14 +1207,17 @@
                         <h3 style="margin-bottom: 10px; font-weight: 500;" data-i18n="secPass">Security & Password</h3>
                         <div class="s-row">
                             <span data-i18n="oldPass">Old Password</span>
-                            <input type="password" id="oldPass" class="settings-select" placeholder="Current Password" style="width: 250px;">
+                            <input type="password" id="oldPass" class="settings-select" placeholder="Current Password"
+                                style="width: 250px;">
                         </div>
                         <div class="s-row">
                             <span data-i18n="newPass">New Password</span>
-                            <input type="password" id="newPass" class="settings-select" placeholder="Strong Password" style="width: 250px;">
+                            <input type="password" id="newPass" class="settings-select" placeholder="Strong Password"
+                                style="width: 250px;">
                         </div>
                         <div class="s-row" style="justify-content: flex-end;">
-                            <button class="btn-primary" style="width: auto; padding: 10px 20px;" onclick="changePassword()" data-i18n="chPass">Change Password</button>
+                            <button class="btn-primary" style="width: auto; padding: 10px 20px;"
+                                onclick="changePassword()" data-i18n="chPass">Change Password</button>
                         </div>
                     </div>
 
@@ -386,15 +1244,19 @@
                                 <option value="kn">Kannada (ಕನ್ನಡ)</option>
                             </select>
                         </div>
-                        
-                        <div class="s-row" style="border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 10px;">
-                            <span data-i18n="logoutText" style="font-weight: bold; color: var(--white);">Account Session</span>
-                            <button class="btn-primary btn-secondary" style="width: auto; padding: 8px 16px;" onclick="logout()">Secure Logout</button>
+
+                        <div class="s-row"
+                            style="border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 10px;">
+                            <span data-i18n="logoutText" style="font-weight: bold; color: var(--white);">Account
+                                Session</span>
+                            <button class="btn-primary btn-secondary" style="width: auto; padding: 8px 16px;"
+                                onclick="logout()">Secure Logout</button>
                         </div>
-                        
+
                         <div class="s-row">
                             <span style="color: #dc3545; font-weight: bold;">Danger Zone</span>
-                            <button class="btn-primary btn-danger" style="width: auto; padding: 8px 16px;" onclick="deleteMyAccount()">Delete My Account</button>
+                            <button class="btn-primary btn-danger" style="width: auto; padding: 8px 16px;"
+                                onclick="deleteMyAccount()">Delete My Account</button>
                         </div>
                     </div>
                 </div>
@@ -414,7 +1276,7 @@
             <header class="editor-header">
                 <button class="back-btn" onclick="closeEditor()" data-i18n="backProj">&#10094; Back to Projects</button>
                 <div id="editorTitle" style="font-weight: bold; font-size: 1.1rem;">Untitled Project - Script</div>
-                
+
                 <div class="header-actions">
                     <button class="btn-outline" onclick="setWatermark()">Watermark</button>
                     <div class="export-group">
@@ -438,21 +1300,25 @@
                     <option value="parenthetical">Parenthetical</option>
                     <option value="transition">Transition</option>
                 </select>
-                
-                <label style="margin-left: 20px; display:flex; align-items:center; gap:8px; cursor:pointer; color: var(--grey-text); font-size: 0.9rem;">
+
+                <label
+                    style="margin-left: 20px; display:flex; align-items:center; gap:8px; cursor:pointer; color: var(--grey-text); font-size: 0.9rem;">
                     <input type="checkbox" id="sceneNumToggle" checked onchange="toggleSceneNumbers()"> Auto-Number
                 </label>
 
-                <!-- Page Color Selector directly inside Toolbar -->
-                <select id="pageColorToggle" class="format-select" style="margin-left: 15px;" onchange="updatePageColor(this.value)">
+                <!-- FIX: Page Color Selector Moved to Toolbar -->
+                <select id="pageColorToggle" class="format-select" style="margin-left: 15px;"
+                    onchange="updatePageColor(this.value)">
                     <option value="page-white">White Page</option>
                     <option value="page-red">Red Page</option>
                 </select>
 
-                <span style="margin-left: auto; color: var(--grey-text); font-size: 0.8rem;"><i>Pro tip: Press <b>Tab</b> while typing to cycle formats</i></span>
+                <span style="margin-left: auto; color: var(--grey-text); font-size: 0.8rem;"><i>Pro tip: Press
+                        <b>Tab</b> while typing to cycle formats</i></span>
             </div>
 
-            <div class="editor-canvas show-scene-numbers" id="pagesContainer" contenteditable="true" spellcheck="false"></div>
+            <div class="editor-canvas show-scene-numbers" id="pagesContainer" contenteditable="true" spellcheck="false">
+            </div>
 
             <div class="status-bar">
                 <span id="saveStatus">All changes saved locally.</span>
@@ -464,7 +1330,8 @@
     <!-- 4. SHOT DIVISION VIEW -->
     <div id="shot-division-view" class="app-view">
         <header class="editor-header">
-            <button class="back-btn" onclick="closeShotDivision()" data-i18n="backProj">&#10094; Back to Projects</button>
+            <button class="back-btn" onclick="closeShotDivision()" data-i18n="backProj">&#10094; Back to
+                Projects</button>
             <div id="shotEditorTitle" style="font-weight: bold; font-size: 1.1rem;">Project - Shot Division</div>
             <div class="header-actions">
                 <button class="btn-editor" onclick="downloadShotlistPDF()">DOWNLOAD SHOTLIST</button>
@@ -482,7 +1349,8 @@
                 <div class="modal-header-actions"><span id="closeNewProjectBtn" title="Close">&#10005;</span></div>
             </div>
             <div class="modal-body">
-                <label style="color:var(--grey-text); font-size:0.9rem; display:block; margin-bottom:5px;">Project Name</label>
+                <label style="color:var(--grey-text); font-size:0.9rem; display:block; margin-bottom:5px;">Project
+                    Name</label>
                 <input type="text" id="newProjectName" class="modal-input" placeholder="e.g. My Awesome Screenplay">
                 <button class="btn-primary" id="saveNewProjectBtn" style="border-radius: 4px;">Save & Open</button>
             </div>
@@ -498,8 +1366,9 @@
             </div>
             <div class="modal-body">
                 <input type="hidden" id="currentShotPId">
-                
-                <label style="display:block; margin-bottom: 5px; color:var(--grey-text); font-size:0.9rem;">Camera Angle / Type</label>
+
+                <label style="display:block; margin-bottom: 5px; color:var(--grey-text); font-size:0.9rem;">Camera Angle
+                    / Type</label>
                 <select id="shotAngle" class="modal-input" style="padding: 10px;">
                     <option value="Wide Shot (WS)">Wide Shot (WS)</option>
                     <option value="Medium Shot (MS)">Medium Shot (MS)</option>
@@ -509,17 +1378,23 @@
                     <option value="Tracking Shot">Tracking / Dolly Shot</option>
                 </select>
 
-                <label style="display:block; margin-bottom: 5px; color:var(--grey-text); font-size:0.9rem;">Shot Action / Description</label>
-                <textarea id="shotDesc" class="modal-input" style="height: 100px; resize:none; padding: 10px;" placeholder="Describe subject action and camera movement..."></textarea>
+                <label style="display:block; margin-bottom: 5px; color:var(--grey-text); font-size:0.9rem;">Shot Action
+                    / Description</label>
+                <textarea id="shotDesc" class="modal-input" style="height: 100px; resize:none; padding: 10px;"
+                    placeholder="Describe subject action and camera movement..."></textarea>
 
-                <label style="display:block; margin-bottom: 5px; color:var(--grey-text); font-size:0.9rem;">Storyboard / Reference Image</label>
+                <label style="display:block; margin-bottom: 5px; color:var(--grey-text); font-size:0.9rem;">Storyboard /
+                    Reference Image</label>
                 <div class="drop-zone" onclick="document.getElementById('shotImageUpload').click()">
                     <span>Click or drop image here</span>
-                    <img id="shotImagePreview" style="display:none; max-width: 100%; max-height:150px; margin-top:10px; border-radius:4px; margin-left:auto; margin-right:auto;">
+                    <img id="shotImagePreview"
+                        style="display:none; max-width: 100%; max-height:150px; margin-top:10px; border-radius:4px; margin-left:auto; margin-right:auto;">
                 </div>
-                <input type="file" id="shotImageUpload" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
+                <input type="file" id="shotImageUpload" accept="image/*" style="display:none;"
+                    onchange="handleImageUpload(event)">
 
-                <button class="btn-primary" id="saveShotBtn" onclick="saveShotDetails()" style="margin-top: 20px;">Attach to Script Line</button>
+                <button class="btn-primary" id="saveShotBtn" onclick="saveShotDetails()"
+                    style="margin-top: 20px;">Attach to Script Line</button>
             </div>
         </div>
     </div>
@@ -540,31 +1415,139 @@
         let currentLang = 'en';
         window.currentPageColor = 'page-white';
 
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCB0g-v30I2abAdUMvR6zR6AOudeP6zjHI",
+            authDomain: "meticulaa.firebaseapp.com",
+            databaseURL: "https://meticulaa-default-rtdb.firebaseio.com",
+            projectId: "meticulaa",
+            storageBucket: "meticulaa.firebasestorage.app",
+            messagingSenderId: "812852821997",
+            appId: "1:812852821997:web:7cd8d4e47dab88e83631e4",
+            measurementId: "G-5MRBQ02NSG"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
         // Core Variables
-        let savedProjects = JSON.parse(localStorage.getItem('meticulaProjects')) || [];
-        let appUsers = JSON.parse(localStorage.getItem('met_users')) || {};
+        let savedProjects = [];
         let loggedInEmail = null;
         let currentProjectId = null;
         let activeWatermark = "";
         let saveTimeout;
         let currentTab = 'projects';
-        let currentBase64Image = ""; 
+        let currentBase64Image = "";
+        let authUser = null;
 
-        document.addEventListener("DOMContentLoaded", function() {
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                authUser = user;
+                loggedInEmail = user.email;
+                syncUserProfile();
+                loadProjectsFromFirestore();
+                document.getElementById("login-view").classList.remove("active");
+                switchTab('projects');
+                setTimeout(() => document.getElementById("dashboard-view").classList.add("active"), 300);
+            } else {
+                authUser = null;
+                loggedInEmail = null;
+                document.getElementById("dashboard-view").classList.remove("active");
+                setTimeout(() => { document.getElementById("login-view").classList.add("active"); }, 300);
+            }
+        });
+
+        let isSignUpMode = false;
+
+        function toggleAuthMode() {
+            isSignUpMode = !isSignUpMode;
+            const btn = document.getElementById('authSubmitBtn');
+            const text = document.getElementById('authToggleText');
+            const link = document.getElementById('authToggleLink');
+
+            if (isSignUpMode) {
+                btn.innerText = "SIGN UP";
+                text.innerText = "Already have an account?";
+                link.innerText = "Log In";
+            } else {
+                btn.innerText = "LOG IN";
+                text.innerText = "Don't have an account?";
+                link.innerText = "Sign Up";
+            }
+        }
+
+        function resetPassword() {
+            const email = document.getElementById('emailField').value.trim();
+            if (!email) {
+                alert("Please enter your email address in the box first, then click 'Forgot Password?'");
+                return;
+            }
+            auth.sendPasswordResetEmail(email)
+                .then(() => alert("Password reset email sent! Check your inbox."))
+                .catch((error) => alert("Error: " + error.message));
+        }
+
+        function handleEmailAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('emailField').value.trim();
+            const pass = document.getElementById('passwordField').value;
+
+            if (isSignUpMode) {
+                auth.createUserWithEmailAndPassword(email, pass)
+                    .then((userCredential) => {
+                        // User automatically signed in, onAuthStateChanged handles routing
+                    })
+                    .catch((error) => {
+                        alert("Sign Up Failed: " + error.message);
+                    });
+            } else {
+                auth.signInWithEmailAndPassword(email, pass)
+                    .then((userCredential) => {
+                        // User automatically signed in, onAuthStateChanged handles routing
+                    })
+                    .catch((error) => {
+                        alert("Login Failed: " + error.message);
+                    });
+            }
+        }
+
+        function signInWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(error => alert("Login Failed: " + error.message));
+        }
+
+        function loadProjectsFromFirestore() {
+            if (!loggedInEmail) return;
+            db.collection("projects").where("ownerEmail", "==", loggedInEmail).onSnapshot(snapshot => {
+                savedProjects = snapshot.docs.map(doc => doc.data());
+                renderDashboard();
+            }, error => {
+                console.error("Error loading projects:", error);
+            });
+        }
+
+        function syncToFirestore(projId) {
+            if (!loggedInEmail) return;
+            const proj = savedProjects.find(p => p.id === projId);
+            if (proj) db.collection("projects").doc(proj.id).set(proj).catch(console.error);
+        }
+
+        function deleteFromFirestore(projId) {
+            if (!loggedInEmail) return;
+            db.collection("projects").doc(projId).delete().catch(console.error);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
             const savedTheme = localStorage.getItem('met_theme') || 'dark';
             setTheme(savedTheme);
             document.getElementById('themePicker').value = savedTheme;
-            
+
             const savedLang = localStorage.getItem('met_lang') || 'en';
             document.getElementById('langPicker').value = savedLang;
             applyLanguage(savedLang);
 
-            document.getElementById("togglePasswordBtn").addEventListener("click", function() {
-                const pass = document.getElementById("passwordField");
-                if (pass.type === "password") { pass.type = "text"; this.textContent = "Hide"; } 
-                else { pass.type = "password"; this.textContent = "Show"; }
-            });
-            
+            // Toggle Password Button logic removed (Google Sign-In active)
+
             const newProjOverlay = document.getElementById("newProjectModalOverlay");
             document.getElementById("openNewProjectModalBtn").addEventListener("click", () => {
                 document.getElementById("newProjectName").value = "";
@@ -572,14 +1555,14 @@
                 setTimeout(() => document.getElementById("newProjectName").focus(), 100);
             });
             document.getElementById("closeNewProjectBtn").addEventListener("click", () => newProjOverlay.style.display = "none");
-            
+
             document.getElementById("saveNewProjectBtn").addEventListener("click", () => {
                 const name = document.getElementById("newProjectName").value.trim() || "Untitled Project";
                 startNewProject(name);
                 newProjOverlay.style.display = "none";
             });
 
-            document.getElementById("newProjectName").addEventListener("keypress", function(e) {
+            document.getElementById("newProjectName").addEventListener("keypress", function (e) {
                 if (e.key === "Enter") { e.preventDefault(); document.getElementById("saveNewProjectBtn").click(); }
             });
 
@@ -589,116 +1572,83 @@
         // ----------------------------------------
         // AUTHENTICATION & SETTINGS
         // ----------------------------------------
-        document.getElementById("loginForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-            const email = document.getElementById("emailField").value.trim();
-            const pass = document.getElementById("passwordField").value;
-
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!emailRegex.test(email)) {
-                alert("Please enter a validly formatted email address (e.g. yourname@domain.com).");
-                return;
-            }
-
-            if(!appUsers[email]) {
-                let defaultName = email.split('@')[0];
-                let counter = 1;
-                while(Object.values(appUsers).some(u => u.name.toLowerCase() === defaultName.toLowerCase())) {
-                    defaultName = email.split('@')[0] + counter;
-                    counter++;
-                }
-                appUsers[email] = { password: pass, name: defaultName };
-                localStorage.setItem('met_users', JSON.stringify(appUsers));
-                alert("New profile created and linked to this email.");
-            } else {
-                if(appUsers[email].password !== pass) {
-                    alert("Authentication Failed: Incorrect Password.");
-                    return;
-                }
-            }
-
-            loggedInEmail = email;
-            syncUserProfile();
-
-            document.getElementById("login-view").classList.remove("active");
-            switchTab('projects');
-            setTimeout(() => document.getElementById("dashboard-view").classList.add("active"), 300); 
-        });
-
-        function forgotPassword() {
-            const email = prompt("Enter your registered email address for password reset:");
-            if(email && email.trim() !== "") {
-                alert(`A password reset validation link has been sent to ${email}.\nPlease check your inbox.`);
-            }
-        }
-
         function syncUserProfile() {
-            if(!loggedInEmail || !appUsers[loggedInEmail]) return;
-            const uName = appUsers[loggedInEmail].name;
+            if (!loggedInEmail || !authUser) return;
+            const uName = authUser.displayName || loggedInEmail.split('@')[0];
             document.getElementById("displayUserName").innerText = uName;
             document.getElementById("avatarIcon").innerText = uName.charAt(0).toUpperCase();
-            
+
             const emailField = document.getElementById("setDisplayEmail");
-            if(emailField) emailField.value = loggedInEmail;
+            if (emailField) emailField.value = loggedInEmail;
 
             const nameDisplay = document.getElementById("settingsCurrentUsername");
-            if(nameDisplay) nameDisplay.innerText = uName;
+            if (nameDisplay) nameDisplay.innerText = uName;
         }
 
         function logout() {
-            loggedInEmail = null;
-            document.getElementById("dashboard-view").classList.remove("active");
-            setTimeout(() => { document.getElementById("login-view").classList.add("active"); document.getElementById("loginForm").reset(); }, 300);
+            auth.signOut();
         }
 
         function updateProfile() {
             const newName = document.getElementById('setUserName').value.trim();
-            if(newName && loggedInEmail) {
-                const isTaken = Object.entries(appUsers).some(([email, data]) => email !== loggedInEmail && data.name.toLowerCase() === newName.toLowerCase());
-                
-                if (isTaken) {
-                    alert("This username is already taken by another user. Please choose a unique one.");
-                    return;
-                }
-
-                appUsers[loggedInEmail].name = newName;
-                localStorage.setItem('met_users', JSON.stringify(appUsers));
-                syncUserProfile();
-                document.getElementById('setUserName').value = ""; // Clear input
-                alert("Username successfully updated.");
+            if (newName && authUser) {
+                authUser.updateProfile({ displayName: newName }).then(() => {
+                    syncUserProfile();
+                    document.getElementById('setUserName').value = "";
+                    alert("Username successfully updated.");
+                }).catch(err => alert("Error updating username: " + err.message));
             }
         }
 
         function changePassword() {
-            const oldP = document.getElementById('oldPass').value;
-            const newP = document.getElementById('newPass').value;
-            if(!oldP || !newP) { alert("Please fill both password fields."); return; }
-            if(appUsers[loggedInEmail].password !== oldP) { alert("Security Alert: Current password is incorrect."); return; }
+            if (!authUser) return;
+            const newPass = document.getElementById('newPass').value;
+            const oldPass = document.getElementById('oldPass').value;
+            
+            if (!newPass || newPass.length < 6) {
+                alert("Please enter a new password of at least 6 characters.");
+                return;
+            }
 
-            appUsers[loggedInEmail].password = newP;
-            localStorage.setItem('met_users', JSON.stringify(appUsers));
-            alert("Security Validation Complete: Password successfully updated!");
-            document.getElementById('oldPass').value = ''; document.getElementById('newPass').value = '';
+            const hasPasswordProvider = authUser.providerData.some(p => p.providerId === 'password');
+            
+            if (hasPasswordProvider) {
+                if (!oldPass) {
+                    alert("Please enter your Old Password to verify your identity.");
+                    return;
+                }
+                const credential = firebase.auth.EmailAuthProvider.credential(authUser.email, oldPass);
+                authUser.reauthenticateWithCredential(credential).then(() => {
+                    authUser.updatePassword(newPass).then(() => {
+                        alert("Password successfully updated! You can now use it to log in.");
+                        document.getElementById('oldPass').value = '';
+                        document.getElementById('newPass').value = '';
+                    }).catch(err => alert("Error setting password: " + err.message));
+                }).catch(err => alert("Old password incorrect: " + err.message));
+            } else {
+                authUser.updatePassword(newPass).then(() => {
+                    alert("Password successfully created! You can now log in using this password OR Google Sign-In.");
+                    document.getElementById('oldPass').value = '';
+                    document.getElementById('newPass').value = '';
+                }).catch(err => {
+                    if(err.code === 'auth/requires-recent-login') {
+                        alert("For security, please log out and log back in with Google before setting a password.");
+                    } else {
+                        alert("Error: " + err.message);
+                    }
+                });
+            }
         }
 
         function deleteMyAccount() {
-            if(!loggedInEmail) return;
-            if(confirm("CRITICAL WARNING: Are you sure you want to permanently delete your account and ALL associated projects? This action CANNOT be undone.")) {
-                const pass = prompt("Security Verification: Please type your current password to confirm account deletion:");
-                if(pass === null) return; 
-                
-                if(pass === appUsers[loggedInEmail].password) {
-                    savedProjects = savedProjects.filter(p => p.ownerEmail !== loggedInEmail);
-                    saveToLocalStorage();
-                    
-                    delete appUsers[loggedInEmail];
-                    localStorage.setItem('met_users', JSON.stringify(appUsers));
-                    
+            if (!loggedInEmail || !authUser) return;
+            if (confirm("CRITICAL WARNING: Are you sure you want to permanently delete your account and ALL associated projects? This action CANNOT be undone.")) {
+                savedProjects.filter(p => p.ownerEmail === loggedInEmail).forEach(p => {
+                    db.collection("projects").doc(p.id).delete();
+                });
+                authUser.delete().then(() => {
                     alert("Your account and all associated data have been permanently deleted.");
-                    logout();
-                } else {
-                    alert("Incorrect password. Account deletion aborted.");
-                }
+                }).catch(error => alert("Error deleting account. You may need to log out and log back in to perform this action."));
             }
         }
 
@@ -706,17 +1656,17 @@
         function applyLanguage(lang) {
             currentLang = lang;
             const dict = i18n[lang];
-            if(!dict) return;
+            if (!dict) return;
 
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if(dict[key]) el.innerText = dict[key];
+                if (dict[key]) el.innerText = dict[key];
             });
             document.querySelectorAll('[data-i18n-ph]').forEach(el => {
                 const key = el.getAttribute('data-i18n-ph');
-                if(dict[key]) el.placeholder = dict[key];
+                if (dict[key]) el.placeholder = dict[key];
             });
-            
+
             if (loggedInEmail) renderDashboard();
         }
 
@@ -738,10 +1688,10 @@
             currentTab = tab;
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(`nav-${tab}`).classList.add('active');
-            
+
             const navText = i18n[currentLang] ? i18n[currentLang][`tab${tab.charAt(0).toUpperCase() + tab.slice(1, 4)}`] || tab.toUpperCase() : tab.toUpperCase();
             document.getElementById('nav-indicator').innerText = `/ ${navText.toUpperCase()}`;
-            
+
             document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
             document.getElementById(`tab-${tab}`).classList.add('active');
 
@@ -752,9 +1702,9 @@
             let listContainerId = 'recentProjectsList';
             if (currentTab === 'trash') listContainerId = 'trashProjectsList';
             else if (currentTab === 'shots') listContainerId = 'shotProjectsList';
-            
+
             const list = document.getElementById(listContainerId);
-            if(!list || !loggedInEmail) return;
+            if (!list || !loggedInEmail) return;
 
             list.innerHTML = "";
             let displayProjects = savedProjects.filter(p => p.ownerEmail === loggedInEmail && (currentTab === 'trash' ? p.isTrashed : !p.isTrashed));
@@ -774,7 +1724,7 @@
                 const initial = proj.name.charAt(0).toUpperCase();
                 const card = document.createElement("div");
                 card.className = "project-card clickable";
-                
+
                 if (currentTab === 'projects') card.onclick = () => openExistingProject(proj.id);
                 else if (currentTab === 'shots') card.onclick = () => openShotDivision(proj.id);
 
@@ -811,21 +1761,20 @@
         function renameProject(e, id) {
             e.stopPropagation();
             const proj = savedProjects.find(p => p.id === id);
-            if(proj) {
+            if (proj) {
                 const newName = prompt("Enter new project name:", proj.name);
-                if(newName && newName.trim() !== "") {
+                if (newName && newName.trim() !== "") {
                     proj.name = newName.trim();
-                    saveToLocalStorage();
-                    renderDashboard();
+                    syncToFirestore(id);
                 }
             }
         }
 
-        function shareProject(e, id) { 
-            e.stopPropagation(); 
+        function shareProject(e, id) {
+            e.stopPropagation();
             const domain = window.location.origin || "https://meticula.studio";
             const dummyLink = `${domain}/share/${id.replace('proj_', '')}`;
-            
+
             navigator.clipboard.writeText(dummyLink).then(() => {
                 alert(`🔗 Secure Link Copied!\n\n${dummyLink}\n\nYou can share this with your team.`);
             }).catch(() => {
@@ -833,9 +1782,9 @@
             });
         }
 
-        function moveToTrash(e, id) { e.stopPropagation(); const proj = savedProjects.find(p => p.id === id); if (proj) { proj.isTrashed = true; saveToLocalStorage(); renderDashboard(); } }
-        function restoreProject(e, id) { e.stopPropagation(); const proj = savedProjects.find(p => p.id === id); if (proj) { proj.isTrashed = false; saveToLocalStorage(); renderDashboard(); } }
-        function permanentlyDelete(e, id) { e.stopPropagation(); if (confirm("Permanently delete this project?")) { savedProjects = savedProjects.filter(p => p.id !== id); saveToLocalStorage(); renderDashboard(); } }
+        function moveToTrash(e, id) { e.stopPropagation(); const proj = savedProjects.find(p => p.id === id); if (proj) { proj.isTrashed = true; syncToFirestore(id); } }
+        function restoreProject(e, id) { e.stopPropagation(); const proj = savedProjects.find(p => p.id === id); if (proj) { proj.isTrashed = false; syncToFirestore(id); } }
+        function permanentlyDelete(e, id) { e.stopPropagation(); if (confirm("Permanently delete this project?")) { deleteFromFirestore(id); } }
 
         // ----------------------------------------
         // CORE EDITOR LOGIC & FIXING WATERMARK
@@ -843,49 +1792,27 @@
         function startNewProject(name) {
             const newId = 'proj_' + Date.now();
             const now = new Date();
-            const timeStr = now.toLocaleDateString() + ", " + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
+            const timeStr = now.toLocaleDateString() + ", " + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
             const colorClass = 'page-white'; // default
-            
-            // Generate Title Page
-            const titlePageHTML = `
-                <div class="script-page ${colorClass}" contenteditable="true" spellcheck="false" data-page="Title page">
-                    <div class="watermark-overlay" contenteditable="false"></div>
-                    <p class="action" style="text-align: center; margin-top: 2.5in; font-size: 24pt; font-weight: bold; text-transform: uppercase;">${name}</p>
-                    <p class="action" style="text-align: center; font-size: 14pt; margin-top: 10px;">[Subtitle]</p>
-                    <p class="action" style="text-align: center; margin-top: 40px;">Written by: </p>
-                    <p class="action" style="text-align: center; font-size: 14pt; margin-top: 10px;">Directed by:</p>
-                    <p class="action" style="text-align: center; margin-top: 40px;">Genre: [Genre]</p>
-                    <p class="action" style="text-align: center; margin-top: 10px;">Based on / Inspired by: [Source]</p>
-                    <p class="action" style="margin-top: 2in;">Mobile No: +91 XXXXXXXXXX</p>
-                    <p class="action">Status: [Original / Remake]</p>
-                </div>`;
 
-            // Generate Script Page 1
-            const scriptPageHTML = `
-                <div class="script-page ${colorClass}" contenteditable="true" spellcheck="false" data-page="1">
-                    <div class="watermark-overlay" contenteditable="false"></div>
-                    <p class="scene" id="p_${Date.now()}">INT. SCENE HEADING - DAY</p>
-                    <p class="action" id="p_${Date.now()+1}"><br></p>
-                </div>`;
+            const defaultHTML = `<div class="script-page ${colorClass}" contenteditable="true" spellcheck="false" data-page="1" id="scriptPage1"><div class="watermark-overlay" contenteditable="false"></div><p class="scene" id="p_${Date.now()}">INT. SCENE HEADING - DAY</p><p class="action" id="p_${Date.now() + 1}"><br></p></div>`;
 
-            const defaultHTML = titlePageHTML + scriptPageHTML;
-
-            const newProject = { 
-                id: newId, 
-                ownerEmail: loggedInEmail, 
-                name: name, 
+            const newProject = {
+                id: newId,
+                ownerEmail: loggedInEmail,
+                name: name,
                 pageColor: colorClass,
-                lastEditedMs: Date.now(), 
-                lastEditedStr: timeStr, 
-                pagesHTML: defaultHTML, 
-                watermark: "", 
-                isTrashed: false, 
-                shots: {} 
+                lastEditedMs: Date.now(),
+                lastEditedStr: timeStr,
+                pagesHTML: defaultHTML,
+                watermark: "",
+                isTrashed: false,
+                shots: {}
             };
-            
-            savedProjects.push(newProject); saveToLocalStorage();
-            if(currentTab !== 'projects') switchTab('projects');
+
+            savedProjects.push(newProject); syncToFirestore(newId);
+            if (currentTab !== 'projects') switchTab('projects');
             openExistingProject(newId);
         }
 
@@ -897,13 +1824,13 @@
             currentProjectId = id;
             activeWatermark = proj.watermark || "";
             window.currentPageColor = proj.pageColor || 'page-white';
-            
+
             document.getElementById("editorTitle").innerText = `${proj.name} - Script`;
             document.getElementById('pageColorToggle').value = window.currentPageColor;
-            
+
             const container = document.getElementById('pagesContainer');
             container.innerHTML = proj.pagesHTML;
-            
+
             applyPhysicalWatermarks(activeWatermark);
 
             document.getElementById('pageCountDisplay').innerText = `Total Pages: ${document.querySelectorAll('.script-page').length}`;
@@ -922,7 +1849,7 @@
         function applyPhysicalWatermarks(text) {
             document.querySelectorAll('.script-page').forEach(page => {
                 let wmLayer = page.querySelector('.watermark-overlay');
-                if(!wmLayer) {
+                if (!wmLayer) {
                     wmLayer = document.createElement('div');
                     wmLayer.className = 'watermark-overlay';
                     wmLayer.contentEditable = "false";
@@ -936,7 +1863,7 @@
             clearTimeout(saveTimeout);
             document.getElementById('saveStatus').innerText = "Saving... ⏳";
             document.getElementById('saveStatus').style.color = "var(--grey-text)";
-            saveTimeout = setTimeout(() => { saveCurrentProjectData(); }, 1000); 
+            saveTimeout = setTimeout(() => { saveCurrentProjectData(); }, 1000);
         });
 
         function saveCurrentProjectData() {
@@ -945,10 +1872,10 @@
             if (projIndex > -1) {
                 const now = new Date();
                 const container = document.getElementById('pagesContainer');
-                
+
                 const seenIds = new Set();
                 container.querySelectorAll('p').forEach((p) => {
-                    if(!p.id || seenIds.has(p.id)) { p.id = 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6); }
+                    if (!p.id || seenIds.has(p.id)) { p.id = 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6); }
                     seenIds.add(p.id);
                 });
 
@@ -956,16 +1883,16 @@
                 savedProjects[projIndex].watermark = activeWatermark;
                 savedProjects[projIndex].pageColor = window.currentPageColor;
                 savedProjects[projIndex].lastEditedMs = Date.now();
-                savedProjects[projIndex].lastEditedStr = now.toLocaleDateString() + ", " + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                saveToLocalStorage();
-                
+                savedProjects[projIndex].lastEditedStr = now.toLocaleDateString() + ", " + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                syncToFirestore(currentProjectId);
+
                 const status = document.getElementById('saveStatus');
                 status.innerText = "Saved to browser. ✅"; status.style.color = "var(--green-save)";
                 setTimeout(() => { status.style.color = "var(--grey-text)"; }, 2000);
             }
         }
 
-        function saveToLocalStorage() { localStorage.setItem('meticulaProjects', JSON.stringify(savedProjects)); }
+        // saveToLocalStorage removed in favor of Firestore sync
 
         function openEditor() {
             document.getElementById("dashboard-view").classList.remove("active");
@@ -973,14 +1900,14 @@
         }
 
         function closeEditor() {
-            saveCurrentProjectData(); renderDashboard(); 
+            saveCurrentProjectData(); renderDashboard();
             document.getElementById("editor-view").classList.remove("active");
             setTimeout(() => { document.getElementById("dashboard-view").classList.add("active"); }, 300);
         }
 
         function toggleSceneNumbers() {
             const toggle = document.getElementById('sceneNumToggle').checked;
-            if(toggle) document.getElementById('pagesContainer').classList.add('show-scene-numbers');
+            if (toggle) document.getElementById('pagesContainer').classList.add('show-scene-numbers');
             else document.getElementById('pagesContainer').classList.remove('show-scene-numbers');
         }
 
@@ -989,7 +1916,7 @@
             if (userInput !== null) {
                 activeWatermark = userInput.trim();
                 applyPhysicalWatermarks(activeWatermark);
-                saveCurrentProjectData(); 
+                saveCurrentProjectData();
             }
         }
 
@@ -999,8 +1926,8 @@
             while (node && node.nodeName !== 'P' && !node.classList?.contains('script-page')) { node = node.parentNode; }
             return (node && node.nodeName === 'P') ? node : null;
         }
-        
-        document.getElementById('formatSelector').addEventListener('change', function() {
+
+        document.getElementById('formatSelector').addEventListener('change', function () {
             const currentP = getCurrentParagraph();
             if (currentP) { currentP.className = this.value; currentP.focus(); saveCurrentProjectData(); }
         });
@@ -1015,7 +1942,7 @@
             }
         }
 
-        document.getElementById('pagesContainer').addEventListener('keydown', function(e) {
+        document.getElementById('pagesContainer').addEventListener('keydown', function (e) {
             const currentP = getCurrentParagraph();
             if (!currentP) return;
             if (e.key === 'Tab') {
@@ -1043,7 +1970,7 @@
             }
         });
 
-        document.getElementById('pagesContainer').addEventListener('input', function(e) {
+        document.getElementById('pagesContainer').addEventListener('input', function (e) {
             const activePage = e.target.closest('.script-page');
             if (!activePage) return;
             if (activePage.scrollHeight > activePage.clientHeight) {
@@ -1051,20 +1978,13 @@
                 if (!overflowP) return;
                 let nextPage = activePage.nextElementSibling;
                 if (!nextPage) {
-                    
-                    // Smart Page Numbering
-                    let currentMax = 0;
-                    document.querySelectorAll('#pagesContainer .script-page').forEach(pg => {
-                        let n = parseInt(pg.getAttribute('data-page'));
-                        if(!isNaN(n) && n > currentMax) currentMax = n;
-                    });
-                    
+                    const currentPageCount = document.querySelectorAll('#pagesContainer .script-page').length;
                     nextPage = document.createElement('div');
                     nextPage.className = 'script-page ' + window.currentPageColor;
                     nextPage.contentEditable = "true";
                     nextPage.spellcheck = false;
-                    nextPage.setAttribute('data-page', currentMax + 1);
-                    
+                    nextPage.setAttribute('data-page', currentPageCount + 1);
+
                     const wm = document.createElement('div');
                     wm.className = 'watermark-overlay';
                     wm.contentEditable = "false";
@@ -1072,14 +1992,14 @@
                     nextPage.appendChild(wm);
 
                     document.getElementById('pagesContainer').appendChild(nextPage);
-                    document.getElementById('pageCountDisplay').innerText = `Total Pages: ${document.querySelectorAll('.script-page').length}`;
+                    document.getElementById('pageCountDisplay').innerText = `Total Pages: ${currentPageCount + 1}`;
                 }
                 nextPage.insertBefore(overflowP, nextPage.querySelector('.watermark-overlay')?.nextSibling || nextPage.firstChild);
-                
+
                 const range = document.createRange();
                 const sel = window.getSelection();
                 range.selectNodeContents(overflowP);
-                range.collapse(false); 
+                range.collapse(false);
                 sel.removeAllRanges();
                 sel.addRange(range);
                 nextPage.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1089,12 +2009,12 @@
         // Export System
         function exportScript() {
             const proj = savedProjects.find(p => p.id === currentProjectId);
-            if(!proj) return;
+            if (!proj) return;
             const format = document.getElementById('exportFormat').value;
             const formattedName = proj.name.replace(/\s+/g, '_');
             document.getElementById('saveStatus').innerText = "Processing File... ⏳";
-            
-            if(document.getElementById('sceneNumToggle').checked) {
+
+            if (document.getElementById('sceneNumToggle').checked) {
                 let count = 1;
                 document.querySelectorAll('#pagesContainer .script-page p.scene').forEach(p => {
                     const span = document.createElement('span'); span.className = 'temp-scene-num'; span.innerText = count + ". "; span.style.color = '#e50914'; span.style.fontWeight = 'bold'; span.style.position = 'absolute'; span.style.left = '-0.6in'; p.prepend(span); count++;
@@ -1111,7 +2031,7 @@
 
         function cleanExport() {
             document.querySelectorAll('.temp-scene-num').forEach(el => el.remove());
-            if(document.getElementById('sceneNumToggle').checked) document.getElementById('pagesContainer').classList.add('show-scene-numbers');
+            if (document.getElementById('sceneNumToggle').checked) document.getElementById('pagesContainer').classList.add('show-scene-numbers');
             const statusMsg = document.getElementById('saveStatus');
             statusMsg.innerText = `Script Downloaded! ✅`; statusMsg.style.color = "var(--green-save)";
             setTimeout(() => { statusMsg.style.color = "var(--grey-text)"; }, 3000);
@@ -1121,31 +2041,31 @@
         // SHOT DIVISION ENGINE
         // ----------------------------------------
         function openShotDivision(id) {
-            saveCurrentProjectData(); 
+            saveCurrentProjectData();
             const proj = savedProjects.find(p => p.id === id);
             currentProjectId = id;
-            if(!proj.shots) proj.shots = {};
+            if (!proj.shots) proj.shots = {};
 
             document.getElementById("shotEditorTitle").innerText = `${proj.name} - Shot Division`;
             const canvas = document.getElementById("shotCanvas");
             canvas.innerHTML = '';
-            
+
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = proj.pagesHTML;
-            
+
             tempDiv.querySelectorAll('.script-page').forEach(page => {
-                page.contentEditable = "false"; 
+                page.contentEditable = "false";
 
                 page.querySelectorAll('p').forEach((p) => {
-                    if(!p.innerText.trim()) return; 
+                    if (!p.innerText.trim()) return;
 
                     const btn = document.createElement('button');
                     btn.className = "btn-add-shot";
-                    
-                    if(proj.shots[p.id]) {
+
+                    if (proj.shots[p.id]) {
                         btn.innerText = "+ Edit Shot";
                         btn.onclick = () => openShotModal(p.id, true);
-                        
+
                         const shotCard = createShotHTML(proj.shots[p.id], p.id);
                         p.insertAdjacentElement('afterend', shotCard);
                     } else {
@@ -1154,7 +2074,7 @@
                     }
                     p.appendChild(btn);
                 });
-                
+
                 canvas.appendChild(page);
             });
 
@@ -1192,7 +2112,7 @@
                 const s = proj.shots[pId];
                 document.getElementById('shotAngle').value = s.angle;
                 document.getElementById('shotDesc').value = s.desc;
-                if(s.img) {
+                if (s.img) {
                     currentBase64Image = s.img;
                     document.getElementById('shotImagePreview').src = currentBase64Image;
                     document.getElementById('shotImagePreview').style.display = 'block';
@@ -1209,7 +2129,7 @@
                 currentBase64Image = "";
                 document.getElementById('saveShotBtn').innerText = "Attach to Script Line";
             }
-            
+
             document.getElementById('shotModalOverlay').style.display = 'flex';
         }
 
@@ -1217,16 +2137,16 @@
 
         function handleImageUpload(e) {
             const file = e.target.files[0];
-            if(!file) return;
+            if (!file) return;
             const reader = new FileReader();
-            reader.onload = function(event) {
+            reader.onload = function (event) {
                 const img = new Image();
-                img.onload = function() {
+                img.onload = function () {
                     const canvas = document.createElement('canvas');
                     const MAX_WIDTH = 400; const scale = img.width > MAX_WIDTH ? (MAX_WIDTH / img.width) : 1;
                     canvas.width = img.width * scale; canvas.height = img.height * scale;
                     const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    
+
                     currentBase64Image = canvas.toDataURL('image/jpeg', 0.6);
                     document.getElementById('shotImagePreview').src = currentBase64Image;
                     document.getElementById('shotImagePreview').style.display = 'block';
@@ -1239,27 +2159,27 @@
         function saveShotDetails() {
             const pId = document.getElementById('currentShotPId').value;
             const proj = savedProjects.find(p => p.id === currentProjectId);
-            
+
             proj.shots[pId] = { angle: document.getElementById('shotAngle').value, desc: document.getElementById('shotDesc').value, img: currentBase64Image };
-            
-            saveToLocalStorage(); closeShotModal(); openShotDivision(currentProjectId); 
+
+            syncToFirestore(currentProjectId); closeShotModal(); openShotDivision(currentProjectId);
         }
 
         function deleteShot(pId) {
-            if(confirm("Remove this shot configuration?")) {
+            if (confirm("Remove this shot configuration?")) {
                 const proj = savedProjects.find(p => p.id === currentProjectId);
-                if(proj.shots[pId]) delete proj.shots[pId];
-                saveToLocalStorage(); openShotDivision(currentProjectId); 
+                if (proj.shots[pId]) delete proj.shots[pId];
+                syncToFirestore(currentProjectId); openShotDivision(currentProjectId);
             }
         }
 
         function downloadShotlistPDF() {
             const element = document.getElementById('shotCanvas');
             const proj = savedProjects.find(p => p.id === currentProjectId);
-            
+
             document.querySelectorAll('.btn-add-shot').forEach(btn => btn.style.display = 'none');
             document.querySelectorAll('.shot-actions').forEach(btn => btn.style.display = 'none');
-            
+
             html2pdf().set({ margin: 0, filename: `${proj.name.replace(/\s+/g, '_')}_Shotlist.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(element).save().then(() => {
                 document.querySelectorAll('.btn-add-shot').forEach(btn => btn.style.display = 'block');
                 document.querySelectorAll('.shot-actions').forEach(btn => btn.style.display = 'flex');
@@ -1267,4 +2187,5 @@
         }
     </script>
 </body>
+
 </html>
