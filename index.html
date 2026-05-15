@@ -13,7 +13,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
 
     <style>
         /* =========================================
@@ -1428,7 +1428,7 @@
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
-        const db = firebase.firestore();
+        const db = firebase.database();
 
         // Core Variables
         let savedProjects = [];
@@ -1445,7 +1445,7 @@
                 authUser = user;
                 loggedInEmail = user.email;
                 syncUserProfile();
-                loadProjectsFromFirestore();
+                loadProjectsFromRTDB();
                 document.getElementById("login-view").classList.remove("active");
                 switchTab('projects');
                 setTimeout(() => document.getElementById("dashboard-view").classList.add("active"), 300);
@@ -1516,25 +1516,33 @@
             auth.signInWithPopup(provider).catch(error => alert("Login Failed: " + error.message));
         }
 
-        function loadProjectsFromFirestore() {
-            if (!loggedInEmail) return;
-            db.collection("projects").where("ownerEmail", "==", loggedInEmail).onSnapshot(snapshot => {
-                savedProjects = snapshot.docs.map(doc => doc.data());
+        function loadProjectsFromRTDB() {
+            if (!authUser || !authUser.uid) return;
+            db.ref('projects/' + authUser.uid).on('value', snapshot => {
+                const data = snapshot.val();
+                savedProjects = data ? Object.values(data) : [];
                 renderDashboard();
             }, error => {
+                alert("Database Load Error: " + error.message);
                 console.error("Error loading projects:", error);
             });
         }
 
-        function syncToFirestore(projId) {
-            if (!loggedInEmail) return;
+        function syncToRTDB(projId) {
+            if (!authUser || !authUser.uid) return;
             const proj = savedProjects.find(p => p.id === projId);
-            if (proj) db.collection("projects").doc(proj.id).set(proj).catch(console.error);
+            if (proj) {
+                db.ref('projects/' + authUser.uid + '/' + proj.id).set(proj).catch(err => {
+                    alert("Database Save Error: " + err.message);
+                });
+            }
         }
 
-        function deleteFromFirestore(projId) {
-            if (!loggedInEmail) return;
-            db.collection("projects").doc(projId).delete().catch(console.error);
+        function deleteFromRTDB(projId) {
+            if (!authUser || !authUser.uid) return;
+            db.ref('projects/' + authUser.uid + '/' + projId).remove().catch(err => {
+                alert("Database Delete Error: " + err.message);
+            });
         }
 
         document.addEventListener("DOMContentLoaded", function () {
@@ -1643,9 +1651,7 @@
         function deleteMyAccount() {
             if (!loggedInEmail || !authUser) return;
             if (confirm("CRITICAL WARNING: Are you sure you want to permanently delete your account and ALL associated projects? This action CANNOT be undone.")) {
-                savedProjects.filter(p => p.ownerEmail === loggedInEmail).forEach(p => {
-                    db.collection("projects").doc(p.id).delete();
-                });
+                db.ref('projects/' + authUser.uid).remove();
                 authUser.delete().then(() => {
                     alert("Your account and all associated data have been permanently deleted.");
                 }).catch(error => alert("Error deleting account. You may need to log out and log back in to perform this action."));
@@ -1765,7 +1771,7 @@
                 const newName = prompt("Enter new project name:", proj.name);
                 if (newName && newName.trim() !== "") {
                     proj.name = newName.trim();
-                    syncToFirestore(id);
+                    syncToRTDB(id);
                 }
             }
         }
@@ -1782,9 +1788,9 @@
             });
         }
 
-        function moveToTrash(e, id) { e.stopPropagation(); const proj = savedProjects.find(p => p.id === id); if (proj) { proj.isTrashed = true; syncToFirestore(id); } }
-        function restoreProject(e, id) { e.stopPropagation(); const proj = savedProjects.find(p => p.id === id); if (proj) { proj.isTrashed = false; syncToFirestore(id); } }
-        function permanentlyDelete(e, id) { e.stopPropagation(); if (confirm("Permanently delete this project?")) { deleteFromFirestore(id); } }
+        function moveToTrash(e, id) { e.stopPropagation(); const proj = savedProjects.find(p => p.id === id); if (proj) { proj.isTrashed = true; syncToRTDB(id); } }
+        function restoreProject(e, id) { e.stopPropagation(); const proj = savedProjects.find(p => p.id === id); if (proj) { proj.isTrashed = false; syncToRTDB(id); } }
+        function permanentlyDelete(e, id) { e.stopPropagation(); if (confirm("Permanently delete this project?")) { deleteFromRTDB(id); } }
 
         // ----------------------------------------
         // CORE EDITOR LOGIC & FIXING WATERMARK
@@ -1811,7 +1817,7 @@
                 shots: {}
             };
 
-            savedProjects.push(newProject); syncToFirestore(newId);
+            savedProjects.push(newProject); syncToRTDB(newId);
             if (currentTab !== 'projects') switchTab('projects');
             openExistingProject(newId);
         }
@@ -1884,7 +1890,7 @@
                 savedProjects[projIndex].pageColor = window.currentPageColor;
                 savedProjects[projIndex].lastEditedMs = Date.now();
                 savedProjects[projIndex].lastEditedStr = now.toLocaleDateString() + ", " + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                syncToFirestore(currentProjectId);
+                syncToRTDB(currentProjectId);
 
                 const status = document.getElementById('saveStatus');
                 status.innerText = "Saved to browser. ✅"; status.style.color = "var(--green-save)";
@@ -2162,14 +2168,14 @@
 
             proj.shots[pId] = { angle: document.getElementById('shotAngle').value, desc: document.getElementById('shotDesc').value, img: currentBase64Image };
 
-            syncToFirestore(currentProjectId); closeShotModal(); openShotDivision(currentProjectId);
+            syncToRTDB(currentProjectId); closeShotModal(); openShotDivision(currentProjectId);
         }
 
         function deleteShot(pId) {
             if (confirm("Remove this shot configuration?")) {
                 const proj = savedProjects.find(p => p.id === currentProjectId);
                 if (proj.shots[pId]) delete proj.shots[pId];
-                syncToFirestore(currentProjectId); openShotDivision(currentProjectId);
+                syncToRTDB(currentProjectId); openShotDivision(currentProjectId);
             }
         }
 
